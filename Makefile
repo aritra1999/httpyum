@@ -1,4 +1,4 @@
-.PHONY: help build test clean install lint coverage run dev fmt vet deps release-local
+.PHONY: help build test clean install lint coverage run dev fmt vet deps release-local release bump-version
 
 BINARY_NAME=httpyum
 BINARY_PATH=./$(BINARY_NAME)
@@ -24,6 +24,8 @@ help:
 	@echo "  make deps           - Download dependencies"
 	@echo "  make tidy           - Tidy go modules"
 	@echo "  make release-local  - Build release binaries for all platforms"
+	@echo "  make bump-version   - Bump version and trigger auto-release (VERSION=v1.0.0 make bump-version)"
+	@echo "  make release        - Create a GitHub release (requires gh CLI, VERSION=v1.0.0 make release)"
 	@echo ""
 	@echo "Environment variables:"
 	@echo "  VERSION             - Set version (default: dev)"
@@ -121,5 +123,36 @@ release-local:
 	GOOS=windows GOARCH=arm64 go build $(LDFLAGS) -o dist/$(BINARY_NAME)-windows-arm64.exe $(CMD_PATH)
 	@echo "Release binaries built in dist/"
 	@ls -lh dist/
+
+bump-version:
+	@if [ -z "$(VERSION)" ] || [ "$(VERSION)" = "dev" ]; then \
+		echo "Error: VERSION must be set (e.g., VERSION=v1.0.0 make bump-version)"; \
+		exit 1; \
+	fi
+	@echo "$(VERSION)" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$$' || (echo "Error: VERSION must be in format vX.Y.Z"; exit 1)
+	@echo "Updating VERSION file to $(VERSION)..."
+	@echo "$(VERSION)" > VERSION
+	@echo "VERSION file updated. Commit and push to trigger auto-release:"
+	@echo "  git add VERSION"
+	@echo "  git commit -m 'chore: bump version to $(VERSION)'"
+	@echo "  git push"
+
+release:
+	@if [ -z "$(VERSION)" ] || [ "$(VERSION)" = "dev" ]; then \
+		echo "Error: VERSION must be set (e.g., VERSION=v1.0.0 make release)"; \
+		exit 1; \
+	fi
+	@echo "$(VERSION)" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$$' || (echo "Error: VERSION must be in format vX.Y.Z"; exit 1)
+	@echo "Creating release $(VERSION) using GitHub CLI..."
+	@if ! command -v gh >/dev/null 2>&1; then \
+		echo "Error: GitHub CLI (gh) not installed. Install with: brew install gh"; \
+		exit 1; \
+	fi
+	@echo "Creating tag $(VERSION)..."
+	@git tag -a "$(VERSION)" -m "Release $(VERSION)" || (echo "Tag may already exist"; exit 1)
+	@echo "Pushing tag to GitHub..."
+	@git push origin "$(VERSION)"
+	@echo "✅ Tag pushed! GitHub Actions will now build and create the release automatically."
+	@echo "Monitor progress at: https://github.com/$$(git config --get remote.origin.url | sed 's/.*github.com[:/]\(.*\).git/\1/')/actions"
 
 all: clean deps fmt vet test build
