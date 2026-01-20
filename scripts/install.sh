@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-REPO="yourusername/httpyum"
+REPO="aritra1999/httpyum"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 BINARY_NAME="httpyum"
 

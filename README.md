@@ -22,7 +22,7 @@ A fast, interactive CLI tool for executing HTTP requests from `.http` files, bui
 Install httpyum and its dependencies with a single command:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yourusername/httpyum/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/aritra1999/httpyum/main/scripts/install.sh | bash
 ```
 
 This will:
@@ -32,28 +32,28 @@ This will:
 
 ### Manual Installation
 
-Download the latest release for your platform from the [releases page](https://github.com/yourusername/httpyum/releases):
+Download the latest release for your platform from the [releases page](https://github.com/aritra1999/httpyum/releases):
 
 **macOS (Apple Silicon)**
 ```bash
-curl -L https://github.com/yourusername/httpyum/releases/latest/download/httpyum-darwin-arm64.tar.gz | tar xz
+curl -L https://github.com/aritra1999/httpyum/releases/latest/download/httpyum-darwin-arm64.tar.gz | tar xz
 sudo mv httpyum-darwin-arm64 /usr/local/bin/httpyum
 ```
 
 **macOS (Intel)**
 ```bash
-curl -L https://github.com/yourusername/httpyum/releases/latest/download/httpyum-darwin-amd64.tar.gz | tar xz
+curl -L https://github.com/aritra1999/httpyum/releases/latest/download/httpyum-darwin-amd64.tar.gz | tar xz
 sudo mv httpyum-darwin-amd64 /usr/local/bin/httpyum
 ```
 
 **Linux (amd64)**
 ```bash
-curl -L https://github.com/yourusername/httpyum/releases/latest/download/httpyum-linux-amd64.tar.gz | tar xz
+curl -L https://github.com/aritra1999/httpyum/releases/latest/download/httpyum-linux-amd64.tar.gz | tar xz
 sudo mv httpyum-linux-amd64 /usr/local/bin/httpyum
 ```
 
 **Windows**
-Download from [releases page](https://github.com/yourusername/httpyum/releases) and add to PATH.
+Download from [releases page](https://github.com/aritra1999/httpyum/releases) and add to PATH.
 
 ### Install from Source
 
@@ -72,7 +72,7 @@ go install httpyum/cmd/httpyum@latest
 Update to the latest version:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yourusername/httpyum/main/scripts/update.sh | bash
+curl -fsSL https://raw.githubusercontent.com/aritra1999/httpyum/main/scripts/update.sh | bash
 ```
 
 ## Uninstalling
@@ -80,7 +80,7 @@ curl -fsSL https://raw.githubusercontent.com/yourusername/httpyum/main/scripts/u
 Remove httpyum from your system:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yourusername/httpyum/main/scripts/uninstall.sh | bash
+curl -fsSL https://raw.githubusercontent.com/aritra1999/httpyum/main/scripts/uninstall.sh | bash
 ```
 
 ## Dependencies
@@ -242,7 +242,7 @@ httpyum was created as a faster alternative to [httpyac](https://httpyac.github.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/httpyum.git
+git clone https://github.com/aritra1999/httpyum.git
 cd httpyum
 
 # Install dependencies

@@ -95,6 +95,6 @@ Keyboard Controls:
     "body": "json"
   }
 
-For more information, visit: https://github.com/yourusername/httpyum
+For more information, visit: https://github.com/aritra1999/httpyum
 `)
 }
