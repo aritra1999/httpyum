@@ -1,0 +1,61 @@
+# Example HTTP requests for httpyum
+# This file demonstrates the .http format with variables and various request types
+
+@baseUrl = https://httpbin.org
+@userId = 123
+@token = test-api-key-12345
+
+### Simple GET request
+GET {{baseUrl}}/get
+
+### GET with headers
+GET {{baseUrl}}/headers
+Accept: application/json
+User-Agent: httpyum/0.1.0
+X-API-Key: {{token}}
+
+### GET with query parameters
+GET {{baseUrl}}/anything?user={{userId}}&format=json
+
+### POST with JSON body
+POST {{baseUrl}}/post
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "userId": {{userId}},
+  "active": true
+}
+
+### POST with form data
+POST {{baseUrl}}/post
+Content-Type: application/x-www-form-urlencoded
+
+name=Jane+Doe&email=jane@example.com&userId={{userId}}
+
+### PUT request
+PUT {{baseUrl}}/put
+Content-Type: application/json
+
+{
+  "id": {{userId}},
+  "status": "updated"
+}
+
+### DELETE request
+DELETE {{baseUrl}}/delete?id={{userId}}
+Authorization: Bearer {{token}}
+
+### Test different status codes - Success
+GET {{baseUrl}}/status/200
+
+### Test different status codes - Not Found
+GET {{baseUrl}}/status/404
+
+### Test different status codes - Server Error
+GET {{baseUrl}}/status/500
+
+### Complex JSON response
+GET {{baseUrl}}/json

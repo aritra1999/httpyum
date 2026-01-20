@@ -1,0 +1,45 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build output
+httpyum
+*.test
+*.out
+
+# Go dependency files
+go.work
+go.work.sum
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Claude Code files
+.claude/
+
+# Test and temporary files
+*.tmp
+*.temp
+test_*.sh
+/tmp/
+
+# Coverage and profiling
+*.prof
+coverage.out
+coverage.html
+coverage.txt
+
+# Release artifacts
+dist/
+*.tar.gz
+*.zip
+*.sha256
+httpyum-*
