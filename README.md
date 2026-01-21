@@ -194,6 +194,41 @@ GET {{baseUrl}}/users
 Authorization: Bearer {{token}}
 ```
 
+### Environment Variables
+
+Load environment variables from your shell using `{{$dotenv VARIABLE_NAME}}`:
+
+**Set environment variables in your shell:**
+```bash
+export JWT="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+export API_KEY="your-api-key-here"
+```
+
+**Use in your `.http` file:**
+```http
+@baseUrl = http://localhost:3000
+@jwt = {{$dotenv JWT}}
+
+### Authenticated Request
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{jwt}}
+
+### Or use directly
+POST {{baseUrl}}/api/data
+X-API-Key: {{$dotenv API_KEY}}
+Content-Type: application/json
+
+{
+  "data": "example"
+}
+```
+
+**Features:**
+- ✅ Reads environment variables from your shell
+- ✅ Shows only variables used in the request (press `v` to toggle)
+- ✅ Masked values for security (only shows last 3 characters)
+- ✅ Variables can reference env vars: `@token = {{$dotenv JWT}}`
+
 ### Request Separators
 
 Requests are separated by `###` optionally followed by a description:
@@ -221,6 +256,7 @@ See [example.http](./example.http) for a complete example with various request t
 - ✅ Request headers
 - ✅ Request body (JSON, form data, text)
 - ✅ Variables and variable substitution
+- ✅ Environment variables (shell environment with `{{$dotenv VAR}}`)
 - ✅ Comments (`#` and `//`)
 - ✅ Request descriptions
 - ✅ Response display with timing
