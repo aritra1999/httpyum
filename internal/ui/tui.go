@@ -38,22 +38,23 @@ func (i requestItem) Description() string {
 }
 
 type Model struct {
-	ParsedFile   *parser.ParsedFile
-	Requests     []parser.Request
-	Variables    map[string]string
-	list         list.Model
-	CurrentView  ViewType
-	LastResult   *client.ExecutionResult
-	ShowHeaders  bool
-	ErrorMsg     string
-	Width        int
-	Height       int
-	SpinnerFrame int
-	executor     *client.Executor
+	ParsedFile    *parser.ParsedFile
+	Requests      []parser.Request
+	Variables     map[string]string
+	list          list.Model
+	CurrentView   ViewType
+	LastResult    *client.ExecutionResult
+	ShowHeaders   bool
+	ShowVariables bool
+	ErrorMsg      string
+	Width         int
+	Height        int
+	SpinnerFrame  int
+	executor      *client.Executor
 }
 
-func NewModel(parsedFile *parser.ParsedFile, showHeaders bool) Model {
-	variables := parser.BuildVariableMap(parsedFile.Variables)
+func NewModel(parsedFile *parser.ParsedFile, envVars map[string]string, showHeaders bool) Model {
+	variables := parser.BuildVariableMap(parsedFile.Variables, envVars)
 
 	items := make([]list.Item, len(parsedFile.Requests))
 	for i, req := range parsedFile.Requests {
@@ -68,16 +69,17 @@ func NewModel(parsedFile *parser.ParsedFile, showHeaders bool) Model {
 	requestList.SetShowHelp(true)
 
 	return Model{
-		ParsedFile:   parsedFile,
-		Requests:     parsedFile.Requests,
-		Variables:    variables,
-		list:         requestList,
-		CurrentView:  ViewList,
-		ShowHeaders:  showHeaders,
-		Width:        80,
-		Height:       24,
-		SpinnerFrame: 0,
-		executor:     client.NewExecutor(variables),
+		ParsedFile:    parsedFile,
+		Requests:      parsedFile.Requests,
+		Variables:     variables,
+		list:          requestList,
+		CurrentView:   ViewList,
+		ShowHeaders:   showHeaders,
+		ShowVariables: true,
+		Width:         80,
+		Height:        24,
+		SpinnerFrame:  0,
+		executor:      client.NewExecutor(variables),
 	}
 }
 
@@ -160,6 +162,9 @@ func (m Model) handleResponseKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	case "h":
 		m.ShowHeaders = !m.ShowHeaders
+
+	case "v":
+		m.ShowVariables = !m.ShowVariables
 
 	case "b", "esc":
 		m.CurrentView = ViewList
