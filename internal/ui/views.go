@@ -15,14 +15,14 @@ func (m Model) RenderListView() string {
 }
 
 func (m Model) RenderResponseView() string {
+	if m.LastResult == nil {
+		return errorStyle.Render("No response to display")
+	}
+
 	var sb strings.Builder
 
-	if m.LastResult == nil {
-		sb.WriteString(errorStyle.Render("No response to display"))
-	} else {
-		responseBox := RenderResponseBox(m.LastResult, m.ShowHeaders, m.Width)
-		sb.WriteString(responseBox)
-	}
+	responseBox := RenderResponseBoxWithVariables(m.LastResult, m.ShowHeaders, m.Variables, m.ShowVariables, m.Width)
+	sb.WriteString(responseBox)
 
 	sb.WriteString("\n\n")
 	sb.WriteString(RenderHelpBar(ViewResponse))

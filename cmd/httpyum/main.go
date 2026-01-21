@@ -36,8 +36,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	envVars := parser.LoadSystemEnv()
+
 	showHeaders := !cfg.NoHeaders
-	model := ui.NewModel(parsedFile, showHeaders)
+	model := ui.NewModel(parsedFile, envVars, showHeaders)
 
 	p := tea.NewProgram(model, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {

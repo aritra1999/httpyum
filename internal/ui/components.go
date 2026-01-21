@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"httpyum/internal/client"
@@ -42,10 +43,19 @@ func RenderRequestListItem(req parser.Request, isSelected bool, index int) strin
 }
 
 func RenderResponseBox(result *client.ExecutionResult, showHeaders bool, width int) string {
+	return RenderResponseBoxWithVariables(result, showHeaders, nil, false, width)
+}
+
+func RenderResponseBoxWithVariables(result *client.ExecutionResult, showHeaders bool, variables map[string]string, showVariables bool, width int) string {
 	var sections []string
 
-	reqSection := renderRequestSection(result)
-	sections = append(sections, reqSection)
+	if showVariables && variables != nil {
+		reqSection := renderRequestSectionWithVariables(result, variables, width)
+		sections = append(sections, reqSection)
+	} else {
+		reqSection := renderRequestSection(result)
+		sections = append(sections, reqSection)
+	}
 
 	statusSection := renderStatusSection(result)
 	sections = append(sections, statusSection)
@@ -58,8 +68,19 @@ func RenderResponseBox(result *client.ExecutionResult, showHeaders bool, width i
 	bodySection := renderBodySection(result)
 	sections = append(sections, bodySection)
 
-	separator := "\n" + mutedStyle.Render(strings.Repeat("─", width-8)) + "\n"
-	content := strings.Join(sections, separator)
+	// Add left padding to each section
+	paddedSections := make([]string, len(sections))
+	for i, section := range sections {
+		lines := strings.Split(section, "\n")
+		for j, line := range lines {
+			lines[j] = "  " + line
+		}
+		paddedSections[i] = strings.Join(lines, "\n")
+	}
+
+	// Separator spans full width (box width - 4 for border)
+	separator := "\n" + mutedStyle.Render(strings.Repeat("─", width-4)) + "\n"
+	content := strings.Join(paddedSections, separator)
 
 	return boxStyle.Width(width - 4).Render(content)
 }
@@ -82,6 +103,107 @@ func renderRequestSection(result *client.ExecutionResult) string {
 	}
 
 	return sb.String()
+}
+
+func renderRequestSectionWithVariables(result *client.ExecutionResult, allVariables map[string]string, totalWidth int) string {
+	// Calculate column widths (65% / 35% split with space for divider)
+	// totalWidth - 4 for border, no horizontal padding
+	contentWidth := totalWidth - 4
+	leftWidth := int(float64(contentWidth) * 0.65)
+	rightWidth := contentWidth - leftWidth - 3 // -3 for divider and spacing
+
+	// Build left column (request details)
+	var leftSb strings.Builder
+	leftSb.WriteString(infoStyle.Bold(true).Render("Request"))
+	leftSb.WriteString("\n")
+	leftSb.WriteString(successStyle.Render(fmt.Sprintf("%s %s", result.Request.Method, result.Request.URL)))
+
+	if len(result.Request.Headers) > 0 {
+		leftSb.WriteString("\n")
+		for key, value := range result.Request.Headers {
+			maxValueLen := leftWidth - len(key) - 4 // Account for ": " and some padding
+			if maxValueLen > 0 && len(value) > maxValueLen {
+				value = value[:maxValueLen-3] + "..."
+			}
+			leftSb.WriteString(fmt.Sprintf("%s: %s\n", headerKeyStyle.Render(key), headerValueStyle.Render(value)))
+		}
+	}
+
+	// Build right column (variables used)
+	var rightSb strings.Builder
+	rightSb.WriteString(infoStyle.Bold(true).Render("Variables Used"))
+	rightSb.WriteString("\n")
+
+	usedVars := parser.ExtractUsedVariables(result.Request, allVariables)
+
+	if len(usedVars) == 0 {
+		rightSb.WriteString(mutedStyle.Render("(none)"))
+	} else {
+		for key, value := range usedVars {
+			maskedValue := maskValue(value)
+			// Format display key: show "$JWT" for env vars instead of "$dotenv_JWT"
+			displayKey := key
+			if strings.HasPrefix(key, "$dotenv_") {
+				displayKey = "$" + strings.TrimPrefix(key, "$dotenv_")
+			}
+			line := fmt.Sprintf("%s = %s", displayKey, maskedValue)
+			if len(line) > rightWidth {
+				line = line[:rightWidth-3] + "..."
+			}
+			rightSb.WriteString(fmt.Sprintf("%s\n", mutedStyle.Render(line)))
+		}
+	}
+
+	// Split into lines
+	leftLines := strings.Split(strings.TrimSuffix(leftSb.String(), "\n"), "\n")
+	rightLines := strings.Split(strings.TrimSuffix(rightSb.String(), "\n"), "\n")
+
+	// Determine max lines
+	maxLines := len(leftLines)
+	if len(rightLines) > maxLines {
+		maxLines = len(rightLines)
+	}
+
+	// Build final output with columns and divider
+	var output strings.Builder
+	divider := mutedStyle.Render("│")
+
+	for i := 0; i < maxLines; i++ {
+		// Left column
+		leftLine := ""
+		if i < len(leftLines) {
+			leftLine = leftLines[i]
+		}
+
+		// Calculate visual length (accounting for ANSI codes)
+		visualLen := visualLength(leftLine)
+		output.WriteString(leftLine)
+
+		// Pad to left width
+		if visualLen < leftWidth {
+			output.WriteString(strings.Repeat(" ", leftWidth-visualLen))
+		}
+
+		// Divider
+		output.WriteString(" " + divider + " ")
+
+		// Right column
+		if i < len(rightLines) {
+			output.WriteString(rightLines[i])
+		}
+
+		output.WriteString("\n")
+	}
+
+	return strings.TrimSuffix(output.String(), "\n")
+}
+
+// visualLength calculates the display width of a string, ignoring ANSI escape codes
+func visualLength(s string) int {
+	// Simple approach: remove ANSI escape sequences
+	ansiRegex := regexp.MustCompile(`\x1b\[[0-9;]*m`)
+	cleaned := ansiRegex.ReplaceAllString(s, "")
+	return len(cleaned)
 }
 
 func renderStatusSection(result *client.ExecutionResult) string {
@@ -171,6 +293,7 @@ func RenderHelpBar(currentView ViewType) string {
 		shortcuts = []string{
 			"f: interactive JSON",
 			"h: toggle headers",
+			"v: toggle variables",
 			"esc/b: back to list",
 			"q: quit",
 		}
@@ -192,4 +315,11 @@ func RenderSpinner(frame int) string {
 	spinners := []string{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"}
 	spinner := spinners[frame%len(spinners)]
 	return infoStyle.Render(fmt.Sprintf("%s Loading...", spinner))
+}
+
+func maskValue(value string) string {
+	if len(value) <= 3 {
+		return "***"
+	}
+	return "..." + value[len(value)-3:]
 }

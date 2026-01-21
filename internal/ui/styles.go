@@ -39,7 +39,7 @@ var (
 	boxStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(colorPrimary).
-			Padding(1, 2)
+			Padding(0, 0)
 
 	headerKeyStyle = lipgloss.NewStyle().
 			Foreground(colorAccent).
