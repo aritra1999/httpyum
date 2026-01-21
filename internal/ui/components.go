@@ -141,7 +141,12 @@ func renderRequestSectionWithVariables(result *client.ExecutionResult, allVariab
 	} else {
 		for key, value := range usedVars {
 			maskedValue := maskValue(value)
-			line := fmt.Sprintf("%s = %s", key, maskedValue)
+			// Format display key: show "$JWT" for env vars instead of "$dotenv_JWT"
+			displayKey := key
+			if strings.HasPrefix(key, "$dotenv_") {
+				displayKey = "$" + strings.TrimPrefix(key, "$dotenv_")
+			}
+			line := fmt.Sprintf("%s = %s", displayKey, maskedValue)
 			if len(line) > rightWidth {
 				line = line[:rightWidth-3] + "..."
 			}
