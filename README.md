@@ -157,6 +157,7 @@ httpyum --no-headers api.http
 ### Response View
 - `f` - Open JSON response in interactive viewer (jless/fx) with expand/collapse (JSON responses only)
 - `h` - Toggle headers visibility
+- `v` - Toggle variables panel (shows variables used in request)
 - `b` or `Esc` - Back to list
 - `q` - Quit
 
