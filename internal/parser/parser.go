@@ -10,7 +10,7 @@ import (
 
 var (
 	variableRegex   = regexp.MustCompile(`^@(\w+)\s*=\s*(.+)$`)
-	httpMethodRegex = regexp.MustCompile(`^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|TRACE|CONNECT)\s+(.+)$`)
+	httpMethodRegex = regexp.MustCompile(`^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|TRACE|CONNECT)\s+(.+?)(?:\s+HTTP/[\d.]+)?$`)
 	headerRegex     = regexp.MustCompile(`^([\w-]+)\s*:\s*(.+)$`)
 	separatorRegex  = regexp.MustCompile(`^###`)
 	commentRegex    = regexp.MustCompile(`^\s*(#|//)(.*)$`)
@@ -158,25 +158,79 @@ func Parse(r io.Reader) (*ParsedFile, error) {
 }
 
 func SubstituteVariables(text string, variables map[string]string) string {
-	pattern := regexp.MustCompile(`\{\{(\w+)\}\}`)
-
-	result := pattern.ReplaceAllStringFunc(text, func(match string) string {
-		varName := match[2 : len(match)-2]
-
-		if value, ok := variables[varName]; ok {
-			return value
+	dotenvPattern := regexp.MustCompile(`\{\{\s*\$dotenv\s+([A-Za-z_][A-Za-z0-9_]*)\s*\}\}`)
+	text = dotenvPattern.ReplaceAllStringFunc(text, func(match string) string {
+		matches := dotenvPattern.FindStringSubmatch(match)
+		if len(matches) > 1 {
+			envVarName := matches[1]
+			if value, ok := variables["$dotenv_"+envVarName]; ok {
+				return value
+			}
 		}
+		return match
+	})
 
+	pattern := regexp.MustCompile(`\{\{\s*(\w+)\s*\}\}`)
+	result := pattern.ReplaceAllStringFunc(text, func(match string) string {
+		matches := pattern.FindStringSubmatch(match)
+		if len(matches) > 1 {
+			varName := matches[1]
+			if value, ok := variables[varName]; ok {
+				return value
+			}
+		}
 		return match
 	})
 
 	return result
 }
 
-func BuildVariableMap(variables []Variable) map[string]string {
+func BuildVariableMap(variables []Variable, envVars map[string]string) map[string]string {
 	m := make(map[string]string)
+
+	for key, value := range envVars {
+		m["$dotenv_"+key] = value
+	}
+
 	for _, v := range variables {
-		m[v.Name] = v.Value
+		m[v.Name] = SubstituteVariables(v.Value, m)
 	}
 	return m
+}
+
+func ExtractUsedVariables(req *Request, allVariables map[string]string) map[string]string {
+	used := make(map[string]string)
+
+	checkText := func(text string) {
+		dotenvPattern := regexp.MustCompile(`\{\{\s*\$dotenv\s+([A-Za-z_][A-Za-z0-9_]*)\s*\}\}`)
+		matches := dotenvPattern.FindAllStringSubmatch(text, -1)
+		for _, match := range matches {
+			if len(match) > 1 {
+				envVar := match[1]
+				key := "$dotenv_" + envVar
+				if value, ok := allVariables[key]; ok {
+					used[envVar] = value
+				}
+			}
+		}
+
+		varPattern := regexp.MustCompile(`\{\{\s*(\w+)\s*\}\}`)
+		matches = varPattern.FindAllStringSubmatch(text, -1)
+		for _, match := range matches {
+			if len(match) > 1 {
+				varName := match[1]
+				if value, ok := allVariables[varName]; ok {
+					used[varName] = value
+				}
+			}
+		}
+	}
+
+	checkText(req.URL)
+	for _, value := range req.Headers {
+		checkText(value)
+	}
+	checkText(req.Body)
+
+	return used
 }
