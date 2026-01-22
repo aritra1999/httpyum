@@ -24,43 +24,56 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Read VERSION file
+      - name: Get latest tag and bump version
         id: version
         run: |
-          if [ ! -f VERSION ]; then
-            echo "Error: VERSION file not found"
-            exit 1
-          fi
-          VERSION=$(cat VERSION | tr -d '[:space:]')
-          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Error: VERSION must be in format vX.Y.Z (e.g., v1.0.0)"
-            exit 1
-          fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Version from file: $VERSION"
+          # Get the latest tag, default to v0.0.0 if no tags exist
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $LATEST_TAG"
 
-      - name: Check if tag already exists
-        id: tag_check
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          if git rev-parse "$VERSION" >/dev/null 2>&1; then
-            echo "Tag $VERSION already exists, skipping release"
-            echo "exists=true" >> $GITHUB_OUTPUT
+          # Extract version numbers
+          if [[ $LATEST_TAG =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            MAJOR="${BASH_REMATCH[1]}"
+            MINOR="${BASH_REMATCH[2]}"
+            PATCH="${BASH_REMATCH[3]}"
           else
-            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Error: Invalid tag format: $LATEST_TAG"
+            exit 1
           fi
+
+          # Bump patch version
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="v${MAJOR}.${MINOR}.${NEW_PATCH}"
+
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VERSION"
+
+          # Update VERSION file
+          echo "$NEW_VERSION" > VERSION
 
       - name: Configure Git
-        if: steps.tag_check.outputs.exists == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Create and push tag
-        if: steps.tag_check.outputs.exists == 'false'
+      - name: Commit VERSION file and create tag
         run: |
           VERSION="${{ steps.version.outputs.version }}"
+
+          # Check if VERSION file has changes
+          git add VERSION
+          if git diff --cached --quiet; then
+            echo "VERSION file unchanged, skipping commit"
+          else
+            # Commit the updated VERSION file
+            git commit -m "chore: bump version to $VERSION [skip ci]"
+            git push origin main
+            echo "✅ Committed VERSION file update"
+          fi
+
+          # Create and push tag
           git tag -a "$VERSION" -m "Release $VERSION"
           git push origin "$VERSION"
-          echo "✅ Created and pushed tag: $VERSION"
+
+          echo "✅ Created tag: $VERSION"
           echo "🚀 Release workflow will now be triggered automatically"
