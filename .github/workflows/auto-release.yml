@@ -60,14 +60,20 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
 
-          # Commit the updated VERSION file
+          # Check if VERSION file has changes
           git add VERSION
-          git commit -m "chore: bump version to $VERSION [skip ci]"
-          git push origin main
+          if git diff --cached --quiet; then
+            echo "VERSION file unchanged, skipping commit"
+          else
+            # Commit the updated VERSION file
+            git commit -m "chore: bump version to $VERSION [skip ci]"
+            git push origin main
+            echo "✅ Committed VERSION file update"
+          fi
 
           # Create and push tag
           git tag -a "$VERSION" -m "Release $VERSION"
           git push origin "$VERSION"
 
-          echo "✅ Updated VERSION file and created tag: $VERSION"
+          echo "✅ Created tag: $VERSION"
           echo "🚀 Release workflow will now be triggered automatically"
