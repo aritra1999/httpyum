@@ -4,76 +4,137 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
 
 permissions:
   contents: write
 
 jobs:
   auto-release:
-    name: Auto Create Release from VERSION file
+    name: Calculate Version and Create Release
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    # Skip if commit message contains [skip ci] or [skip release]
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[skip release]') }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Get latest tag and bump version
-        id: version
+      - name: Get latest tag
+        id: latest_tag
         run: |
           # Get the latest tag, default to v0.0.0 if no tags exist
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
           echo "Latest tag: $LATEST_TAG"
 
-          # Extract version numbers
-          if [[ $LATEST_TAG =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-            MAJOR="${BASH_REMATCH[1]}"
-            MINOR="${BASH_REMATCH[2]}"
-            PATCH="${BASH_REMATCH[3]}"
+      - name: Analyze commits for version bump
+        id: version
+        run: |
+          LATEST_TAG="${{ steps.latest_tag.outputs.tag }}"
+          
+          # Get commits since last tag
+          if [ "$LATEST_TAG" = "v0.0.0" ]; then
+            COMMITS=$(git log --oneline --pretty=format:"%s")
           else
-            echo "Error: Invalid tag format: $LATEST_TAG"
-            exit 1
+            COMMITS=$(git log ${LATEST_TAG}..HEAD --oneline --pretty=format:"%s")
+          fi
+          
+          echo "Commits since $LATEST_TAG:"
+          echo "$COMMITS"
+          
+          # Check if there are any commits to analyze
+          if [ -z "$COMMITS" ]; then
+            echo "No new commits since last tag"
+            echo "bump=none" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Determine version bump type based on conventional commits
+          BUMP="none"
+          
+          # Check for breaking changes (major bump)
+          if echo "$COMMITS" | grep -qiE "^[a-z]+(\(.+\))?!:|BREAKING CHANGE:"; then
+            BUMP="major"
+          # Check for features (minor bump)
+          elif echo "$COMMITS" | grep -qiE "^feat(\(.+\))?:"; then
+            BUMP="minor"
+          # Check for fixes, perf, refactor (patch bump)
+          elif echo "$COMMITS" | grep -qiE "^(fix|perf|refactor)(\(.+\))?:"; then
+            BUMP="patch"
+          fi
+          
+          echo "Determined bump type: $BUMP"
+          echo "bump=$BUMP" >> $GITHUB_OUTPUT
+          
+          # Calculate new version
+          if [ "$BUMP" != "none" ]; then
+            # Parse current version (remove 'v' prefix)
+            VERSION=${LATEST_TAG#v}
+            MAJOR=$(echo $VERSION | cut -d. -f1)
+            MINOR=$(echo $VERSION | cut -d. -f2)
+            PATCH=$(echo $VERSION | cut -d. -f3)
+            
+            case $BUMP in
+              major)
+                MAJOR=$((MAJOR + 1))
+                MINOR=0
+                PATCH=0
+                ;;
+              minor)
+                MINOR=$((MINOR + 1))
+                PATCH=0
+                ;;
+              patch)
+                PATCH=$((PATCH + 1))
+                ;;
+            esac
+            
+            NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "New version: $NEW_VERSION"
           fi
 
-          # Bump patch version
-          NEW_PATCH=$((PATCH + 1))
-          NEW_VERSION="v${MAJOR}.${MINOR}.${NEW_PATCH}"
-
-          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "New version: $NEW_VERSION"
-
-          # Update VERSION file
-          echo "$NEW_VERSION" > VERSION
+      - name: Check if tag already exists
+        id: tag_check
+        if: steps.version.outputs.bump != 'none'
+        run: |
+          NEW_VERSION="${{ steps.version.outputs.new_version }}"
+          if git rev-parse "$NEW_VERSION" >/dev/null 2>&1; then
+            echo "Tag $NEW_VERSION already exists, skipping release"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Configure Git
+        if: steps.version.outputs.bump != 'none' && steps.tag_check.outputs.exists == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Commit VERSION file and create tag
+      - name: Create and push tag
+        if: steps.version.outputs.bump != 'none' && steps.tag_check.outputs.exists == 'false'
         run: |
-          VERSION="${{ steps.version.outputs.version }}"
-
-          # Check if VERSION file has changes
-          git add VERSION
-          if git diff --cached --quiet; then
-            echo "VERSION file unchanged, skipping commit"
-          else
-            # Commit the updated VERSION file
-            git commit -m "chore: bump version to $VERSION [skip ci]"
-            git push origin main
-            echo "✅ Committed VERSION file update"
-          fi
-
-          # Create and push tag
-          git tag -a "$VERSION" -m "Release $VERSION"
-          git push origin "$VERSION"
-
-          echo "✅ Created tag: $VERSION"
+          NEW_VERSION="${{ steps.version.outputs.new_version }}"
+          git tag -a "$NEW_VERSION" -m "Release $NEW_VERSION"
+          git push origin "$NEW_VERSION"
+          echo "✅ Created and pushed tag: $NEW_VERSION"
           echo "🚀 Release workflow will now be triggered automatically"
+
+      - name: Summary
+        run: |
+          echo "## Auto Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Latest Tag:** ${{ steps.latest_tag.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Bump Type:** ${{ steps.version.outputs.bump }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.version.outputs.bump }}" != "none" ]; then
+            echo "- **New Version:** ${{ steps.version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ steps.tag_check.outputs.exists }}" == "true" ]; then
+              echo "- **Status:** ⏭️ Skipped (tag already exists)" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- **Status:** ✅ Tag created and pushed" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "- **Status:** ⏭️ No release needed (no feat/fix/perf/refactor commits)" >> $GITHUB_STEP_SUMMARY
+          fi
