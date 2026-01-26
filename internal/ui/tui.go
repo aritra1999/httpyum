@@ -3,12 +3,15 @@ package ui
 import (
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"httpyum/internal/client"
 	"httpyum/internal/parser"
 
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -38,19 +41,21 @@ func (i requestItem) Description() string {
 }
 
 type Model struct {
-	ParsedFile    *parser.ParsedFile
-	Requests      []parser.Request
-	Variables     map[string]string
-	list          list.Model
-	CurrentView   ViewType
-	LastResult    *client.ExecutionResult
-	ShowHeaders   bool
-	ShowVariables bool
-	ErrorMsg      string
-	Width         int
-	Height        int
-	SpinnerFrame  int
-	executor      *client.Executor
+	ParsedFile          *parser.ParsedFile
+	Requests            []parser.Request
+	Variables           map[string]string
+	list                list.Model
+	viewport            viewport.Model
+	CurrentView         ViewType
+	LastResult          *client.ExecutionResult
+	ShowHeaders         bool
+	ShowVariables       bool
+	ErrorMsg            string
+	Width               int
+	Height              int
+	SpinnerFrame        int
+	executor            *client.Executor
+	cachedStaticSection string
 }
 
 func NewModel(parsedFile *parser.ParsedFile, envVars map[string]string, showHeaders bool) Model {
@@ -67,12 +72,24 @@ func NewModel(parsedFile *parser.ParsedFile, envVars map[string]string, showHead
 	requestList.SetShowStatusBar(true)
 	requestList.SetFilteringEnabled(true)
 	requestList.SetShowHelp(true)
+	requestList.DisableQuitKeybindings()
+
+	requestList.AdditionalShortHelpKeys = func() []key.Binding {
+		return []key.Binding{}
+	}
+	requestList.AdditionalFullHelpKeys = func() []key.Binding {
+		return []key.Binding{}
+	}
+
+	vp := viewport.New(80, 20)
+	vp.Style = viewportStyle
 
 	return Model{
 		ParsedFile:    parsedFile,
 		Requests:      parsedFile.Requests,
 		Variables:     variables,
 		list:          requestList,
+		viewport:      vp,
 		CurrentView:   ViewList,
 		ShowHeaders:   showHeaders,
 		ShowVariables: true,
@@ -83,7 +100,6 @@ func NewModel(parsedFile *parser.ParsedFile, envVars map[string]string, showHead
 	}
 }
 
-// Init initializes the model
 func (m Model) Init() tea.Cmd {
 	return nil
 }
@@ -113,19 +129,35 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.list, cmd = m.list.Update(msg)
 				return m, cmd
 			}
+		} else {
+			return m.handleKeyPress(msg)
 		}
-		return m.handleKeyPress(msg)
 
 	case tea.WindowSizeMsg:
 		m.Width = msg.Width
 		m.Height = msg.Height
-		h, v := docStyle.GetFrameSize()
-		m.list.SetSize(msg.Width-h, msg.Height-v)
+
+		if m.CurrentView == ViewList {
+			h, v := docStyle.GetFrameSize()
+			m.list.SetSize(msg.Width-h, msg.Height-v)
+		}
+
+		m.viewport.Width = max(msg.Width-8, 0)
+		if m.CurrentView == ViewResponse {
+			if m.LastResult != nil {
+				m.cachedStaticSection = RenderResponseStaticSection(m.LastResult, m.ShowHeaders, m.Variables, m.ShowVariables, m.Width)
+			}
+			m.updateViewportHeight()
+		}
 		return m, nil
 
 	case executeFinishedMsg:
 		m.LastResult = msg.result
 		m.CurrentView = ViewResponse
+
+		m.list.ResetFilter()
+
+		m.updateViewportContent()
 		return m, nil
 
 	case tickMsg:
@@ -156,18 +188,25 @@ func (m Model) handleKeyPress(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) handleResponseKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
 	switch msg.String() {
 	case "q", "ctrl+c":
 		return m, tea.Quit
 
 	case "h":
 		m.ShowHeaders = !m.ShowHeaders
+		m.updateViewportContent()
+		return m, nil
 
 	case "v":
 		m.ShowVariables = !m.ShowVariables
+		m.updateViewportContent()
+		return m, nil
 
 	case "b", "esc":
 		m.CurrentView = ViewList
+		return m, nil
 
 	case "f":
 		if m.LastResult != nil && m.LastResult.Response != nil {
@@ -183,6 +222,11 @@ func (m Model) handleResponseKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
+		return m, nil
+
+	case "up", "down", "pgup", "pgdown", "home", "end", "k", "j":
+		m.viewport, cmd = m.viewport.Update(msg)
+		return m, cmd
 	}
 
 	return m, nil
@@ -256,4 +300,34 @@ func openInJSONViewer(jsonData []byte, viewer string) tea.Cmd {
 
 type jsonViewerErrorMsg struct {
 	err error
+}
+
+func (m *Model) updateViewportContent() {
+	if m.LastResult == nil {
+		return
+	}
+
+	m.cachedStaticSection = RenderResponseStaticSection(m.LastResult, m.ShowHeaders, m.Variables, m.ShowVariables, m.Width)
+
+	bodyContent := RenderResponseBodyContent(m.LastResult)
+	m.viewport.SetContent(bodyContent)
+
+	m.updateViewportHeight()
+}
+
+func (m *Model) updateViewportHeight() {
+	if m.LastResult == nil {
+		return
+	}
+
+	staticHeight := strings.Count(m.cachedStaticSection, "\n") + 1
+
+	reservedSpace := staticHeight + 8
+	availableHeight := m.Height - reservedSpace
+
+	if availableHeight < 5 {
+		availableHeight = 5
+	}
+
+	m.viewport.Height = availableHeight
 }

@@ -209,7 +209,6 @@ func ExtractUsedVariables(req *Request, allVariables map[string]string) map[stri
 				envVar := match[1]
 				key := "$dotenv_" + envVar
 				if value, ok := allVariables[key]; ok {
-					// Keep the $dotenv_ prefix to avoid collision with local vars
 					used[key] = value
 				}
 			}

@@ -59,3 +59,16 @@ GET {{baseUrl}}/status/500
 
 ### Complex JSON response
 GET {{baseUrl}}/json
+
+### Very long response for testing scrolling
+# This endpoint returns a large JSON response with many items
+GET https://jsonplaceholder.typicode.com/posts
+Description: Returns 100 posts - great for testing scrolling functionality
+
+### Large user list for testing
+GET https://jsonplaceholder.typicode.com/users
+Description: Returns user list with detailed information
+
+### Very large comments list
+GET https://jsonplaceholder.typicode.com/comments
+Description: Returns 500 comments - excellent for testing viewport scrolling

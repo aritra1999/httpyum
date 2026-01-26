@@ -46,6 +46,53 @@ func RenderResponseBox(result *client.ExecutionResult, showHeaders bool, width i
 	return RenderResponseBoxWithVariables(result, showHeaders, nil, false, width)
 }
 
+func RenderResponseStaticSection(result *client.ExecutionResult, showHeaders bool, variables map[string]string, showVariables bool, width int) string {
+	var sections []string
+
+	if showVariables && variables != nil {
+		reqSection := renderRequestSectionWithVariables(result, variables, width)
+		sections = append(sections, reqSection)
+	} else {
+		reqSection := renderRequestSection(result)
+		sections = append(sections, reqSection)
+	}
+
+	statusSection := renderStatusSection(result)
+	sections = append(sections, statusSection)
+
+	if showHeaders && result.Response != nil && len(result.Response.Headers) > 0 {
+		headerSection := renderHeadersSection(result)
+		sections = append(sections, headerSection)
+	}
+
+	paddedSections := make([]string, len(sections))
+	for i, section := range sections {
+		lines := strings.Split(section, "\n")
+		for j, line := range lines {
+			lines[j] = "  " + line
+		}
+		paddedSections[i] = strings.Join(lines, "\n")
+	}
+
+	repeatCount := max(width-4, 0)
+	boxWidth := max(width-4, 1)
+	separator := "\n" + mutedStyle.Render(strings.Repeat("─", repeatCount)) + "\n"
+	content := strings.Join(paddedSections, separator)
+
+	return boxStyle.Width(boxWidth).Render(content)
+}
+
+func RenderResponseBodyContent(result *client.ExecutionResult) string {
+	bodySection := renderBodySection(result)
+
+	lines := strings.Split(bodySection, "\n")
+	for j, line := range lines {
+		lines[j] = "  " + line
+	}
+
+	return strings.Join(lines, "\n")
+}
+
 func RenderResponseBoxWithVariables(result *client.ExecutionResult, showHeaders bool, variables map[string]string, showVariables bool, width int) string {
 	var sections []string
 
@@ -68,7 +115,6 @@ func RenderResponseBoxWithVariables(result *client.ExecutionResult, showHeaders 
 	bodySection := renderBodySection(result)
 	sections = append(sections, bodySection)
 
-	// Add left padding to each section
 	paddedSections := make([]string, len(sections))
 	for i, section := range sections {
 		lines := strings.Split(section, "\n")
@@ -78,11 +124,12 @@ func RenderResponseBoxWithVariables(result *client.ExecutionResult, showHeaders 
 		paddedSections[i] = strings.Join(lines, "\n")
 	}
 
-	// Separator spans full width (box width - 4 for border)
-	separator := "\n" + mutedStyle.Render(strings.Repeat("─", width-4)) + "\n"
+	repeatCount := max(width-4, 0)
+	boxWidth := max(width-4, 1)
+	separator := "\n" + mutedStyle.Render(strings.Repeat("─", repeatCount)) + "\n"
 	content := strings.Join(paddedSections, separator)
 
-	return boxStyle.Width(width - 4).Render(content)
+	return boxStyle.Width(boxWidth).Render(content)
 }
 
 func renderRequestSection(result *client.ExecutionResult) string {
@@ -106,13 +153,10 @@ func renderRequestSection(result *client.ExecutionResult) string {
 }
 
 func renderRequestSectionWithVariables(result *client.ExecutionResult, allVariables map[string]string, totalWidth int) string {
-	// Calculate column widths (65% / 35% split with space for divider)
-	// totalWidth - 4 for border, no horizontal padding
 	contentWidth := totalWidth - 4
 	leftWidth := int(float64(contentWidth) * 0.65)
-	rightWidth := contentWidth - leftWidth - 3 // -3 for divider and spacing
+	rightWidth := contentWidth - leftWidth - 3
 
-	// Build left column (request details)
 	var leftSb strings.Builder
 	leftSb.WriteString(infoStyle.Bold(true).Render("Request"))
 	leftSb.WriteString("\n")
@@ -121,7 +165,7 @@ func renderRequestSectionWithVariables(result *client.ExecutionResult, allVariab
 	if len(result.Request.Headers) > 0 {
 		leftSb.WriteString("\n")
 		for key, value := range result.Request.Headers {
-			maxValueLen := leftWidth - len(key) - 4 // Account for ": " and some padding
+			maxValueLen := leftWidth - len(key) - 4
 			if maxValueLen > 0 && len(value) > maxValueLen {
 				value = value[:maxValueLen-3] + "..."
 			}
@@ -129,7 +173,6 @@ func renderRequestSectionWithVariables(result *client.ExecutionResult, allVariab
 		}
 	}
 
-	// Build right column (variables used)
 	var rightSb strings.Builder
 	rightSb.WriteString(infoStyle.Bold(true).Render("Variables Used"))
 	rightSb.WriteString("\n")
@@ -141,7 +184,6 @@ func renderRequestSectionWithVariables(result *client.ExecutionResult, allVariab
 	} else {
 		for key, value := range usedVars {
 			maskedValue := maskValue(value)
-			// Format display key: show "$JWT" for env vars instead of "$dotenv_JWT"
 			displayKey := key
 			if strings.HasPrefix(key, "$dotenv_") {
 				displayKey = "$" + strings.TrimPrefix(key, "$dotenv_")
@@ -154,40 +196,32 @@ func renderRequestSectionWithVariables(result *client.ExecutionResult, allVariab
 		}
 	}
 
-	// Split into lines
 	leftLines := strings.Split(strings.TrimSuffix(leftSb.String(), "\n"), "\n")
 	rightLines := strings.Split(strings.TrimSuffix(rightSb.String(), "\n"), "\n")
 
-	// Determine max lines
 	maxLines := len(leftLines)
 	if len(rightLines) > maxLines {
 		maxLines = len(rightLines)
 	}
 
-	// Build final output with columns and divider
 	var output strings.Builder
 	divider := mutedStyle.Render("│")
 
 	for i := 0; i < maxLines; i++ {
-		// Left column
 		leftLine := ""
 		if i < len(leftLines) {
 			leftLine = leftLines[i]
 		}
 
-		// Calculate visual length (accounting for ANSI codes)
 		visualLen := visualLength(leftLine)
 		output.WriteString(leftLine)
 
-		// Pad to left width
 		if visualLen < leftWidth {
 			output.WriteString(strings.Repeat(" ", leftWidth-visualLen))
 		}
 
-		// Divider
 		output.WriteString(" " + divider + " ")
 
-		// Right column
 		if i < len(rightLines) {
 			output.WriteString(rightLines[i])
 		}
@@ -198,9 +232,7 @@ func renderRequestSectionWithVariables(result *client.ExecutionResult, allVariab
 	return strings.TrimSuffix(output.String(), "\n")
 }
 
-// visualLength calculates the display width of a string, ignoring ANSI escape codes
 func visualLength(s string) int {
-	// Simple approach: remove ANSI escape sequences
 	ansiRegex := regexp.MustCompile(`\x1b\[[0-9;]*m`)
 	cleaned := ansiRegex.ReplaceAllString(s, "")
 	return len(cleaned)
@@ -291,10 +323,11 @@ func RenderHelpBar(currentView ViewType) string {
 		}
 	case ViewResponse:
 		shortcuts = []string{
+			"↑/↓: scroll",
 			"f: interactive JSON",
 			"h: toggle headers",
 			"v: toggle variables",
-			"esc/b: back to list",
+			"esc/b: back",
 			"q: quit",
 		}
 	case ViewLoading:

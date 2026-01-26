@@ -68,6 +68,8 @@ var (
 
 	docStyle = lipgloss.NewStyle().
 			Margin(1, 2)
+
+	viewportStyle = lipgloss.NewStyle()
 )
 
 func StatusCodeColor(statusCode int) lipgloss.Color {

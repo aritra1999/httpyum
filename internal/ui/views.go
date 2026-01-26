@@ -21,10 +21,13 @@ func (m Model) RenderResponseView() string {
 
 	var sb strings.Builder
 
-	responseBox := RenderResponseBoxWithVariables(m.LastResult, m.ShowHeaders, m.Variables, m.ShowVariables, m.Width)
-	sb.WriteString(responseBox)
+	sb.WriteString(m.cachedStaticSection)
 
-	sb.WriteString("\n\n")
+	sb.WriteString("\n")
+	boxWidth := max(m.Width-4, 1)
+	sb.WriteString(boxStyle.Width(boxWidth).Render(m.viewport.View()))
+
+	sb.WriteString("\n")
 	sb.WriteString(RenderHelpBar(ViewResponse))
 
 	return sb.String()
