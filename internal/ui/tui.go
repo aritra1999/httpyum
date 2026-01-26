@@ -144,6 +144,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		m.viewport.Width = msg.Width - 8
 		if m.CurrentView == ViewResponse {
+			if m.LastResult != nil {
+				m.cachedStaticSection = RenderResponseStaticSection(m.LastResult, m.ShowHeaders, m.Variables, m.ShowVariables, m.Width)
+			}
 			m.updateViewportHeight()
 		}
 		return m, nil
