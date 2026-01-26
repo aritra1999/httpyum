@@ -74,10 +74,12 @@ func RenderResponseStaticSection(result *client.ExecutionResult, showHeaders boo
 		paddedSections[i] = strings.Join(lines, "\n")
 	}
 
-	separator := "\n" + mutedStyle.Render(strings.Repeat("─", width-4)) + "\n"
+	repeatCount := max(width-4, 0)
+	boxWidth := max(width-4, 1)
+	separator := "\n" + mutedStyle.Render(strings.Repeat("─", repeatCount)) + "\n"
 	content := strings.Join(paddedSections, separator)
 
-	return boxStyle.Width(width - 4).Render(content)
+	return boxStyle.Width(boxWidth).Render(content)
 }
 
 func RenderResponseBodyContent(result *client.ExecutionResult) string {
@@ -122,10 +124,12 @@ func RenderResponseBoxWithVariables(result *client.ExecutionResult, showHeaders 
 		paddedSections[i] = strings.Join(lines, "\n")
 	}
 
-	separator := "\n" + mutedStyle.Render(strings.Repeat("─", width-4)) + "\n"
+	repeatCount := max(width-4, 0)
+	boxWidth := max(width-4, 1)
+	separator := "\n" + mutedStyle.Render(strings.Repeat("─", repeatCount)) + "\n"
 	content := strings.Join(paddedSections, separator)
 
-	return boxStyle.Width(width - 4).Render(content)
+	return boxStyle.Width(boxWidth).Render(content)
 }
 
 func renderRequestSection(result *client.ExecutionResult) string {

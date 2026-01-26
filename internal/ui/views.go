@@ -24,7 +24,8 @@ func (m Model) RenderResponseView() string {
 	sb.WriteString(m.cachedStaticSection)
 
 	sb.WriteString("\n")
-	sb.WriteString(boxStyle.Width(m.Width - 4).Render(m.viewport.View()))
+	boxWidth := max(m.Width-4, 1)
+	sb.WriteString(boxStyle.Width(boxWidth).Render(m.viewport.View()))
 
 	sb.WriteString("\n")
 	sb.WriteString(RenderHelpBar(ViewResponse))
