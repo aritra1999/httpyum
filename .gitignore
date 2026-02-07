@@ -25,6 +25,9 @@ go.work.sum
 # Claude Code files
 .claude/
 
+# Agent files
+.agents/
+
 # Test and temporary files
 *.tmp
 *.temp
