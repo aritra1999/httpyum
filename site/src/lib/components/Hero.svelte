@@ -76,7 +76,7 @@
 		href="#features"
 		class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 no-underline z-10 animate-[bounce_2s_ease-in-out_infinite] max-md:bottom-6"
 	>
-		<div class="w-0.5 h-10 bg-black max-md:h-[30px]"></div>
+		<div class="w-0.5 h-10 bg-black max-md:h-7.5"></div>
 		<div class="w-2 h-2 bg-black rounded-full"></div>
 	</a>
 </section>
