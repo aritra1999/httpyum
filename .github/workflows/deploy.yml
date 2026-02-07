@@ -24,22 +24,20 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: site/package-lock.json
+          node-version: "20"
 
       - name: Install dependencies
-        run: cd site && npm ci
+        run: cd site && rm -rf node_modules package-lock.json && npm install
 
       - name: Build
         env:
-          BASE_PATH: '/httpyum'
+          BASE_PATH: "/httpyum"
         run: cd site && npm run build
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'site/build/'
+          path: "site/build/"
 
   deploy:
     needs: build
