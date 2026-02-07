@@ -1,7 +1,6 @@
 # httpyum
 
-
-![Loading Preview ...](https://github.com/user-attachments/assets/fc453cdb-5173-48a9-9455-3551bb1ab805)
+![output](https://github.com/user-attachments/assets/e4313241-a4c8-4c80-a422-1fde7f953bcc)
 
 
 A fast, interactive CLI tool for executing HTTP requests from `.http` files, built with Go and [bubbletea](https://github.com/charmbracelet/bubbletea).
