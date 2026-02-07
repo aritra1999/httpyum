@@ -62,7 +62,7 @@
 		</div>
 		<div class="relative">
 			<div
-				class="bg-black border-2 border-black overflow-hidden shadow-[4px_4px_0_#000] -rotate-1 transition-transform duration-300 hover:rotate-0 max-md:rotate-0 max-md:shadow-[4px_4px_0_#000]"
+				class="border-2 border-black overflow-hidden shadow-[4px_4px_0_#000] -rotate-1 transition-transform duration-300 hover:rotate-0 max-md:rotate-0 max-md:shadow-[4px_4px_0_#000] bg-gray-100"
 			>
 				<img
 					src="https://github.com/user-attachments/assets/e4313241-a4c8-4c80-a422-1fde7f953bcc"
