@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Github } from "@lucide/svelte";
+	import { base } from "$app/paths";
 </script>
 
 <nav
@@ -9,7 +10,7 @@
 		class="px-6 py-3 flex justify-between items-center max-md:px-4 max-md:py-2 gap-6"
 	>
 		<a
-			href="/"
+			href="{base}/"
 			class="flex items-center text-black no-underline transition-transform duration-200 hover:scale-105"
 		>
 			<svg
