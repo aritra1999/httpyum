@@ -3,17 +3,25 @@
 	import { Button } from "$lib/components/ui/button/index.js";
 </script>
 
-<section class="contribute-section">
-	<div class="container">
-		<div class="contribute-content">
-			<h2 class="contribute-title">
+<section
+	class="py-16 px-8 bg-[#f5f5f5] border-b border-[#e5e5e5] max-md:py-12 max-md:px-4"
+>
+	<div class="container max-w-[1100px] mx-auto px-8 max-md:px-4">
+		<div class="text-center max-w-[700px] mx-auto">
+			<h2
+				class="text-[1.75rem] font-bold m-0 mb-4 -tracking-[0.01em] max-md:text-2xl max-[480px]:text-xl"
+			>
 				Found a bug or want to request a feature?
 			</h2>
-			<p class="contribute-description">
-				We'd love to hear from you! Open an issue on GitHub to
-				report bugs, request features, or contribute to the project.
+			<p
+				class="text-lg text-[#666] m-0 mb-8 leading-relaxed max-md:text-base"
+			>
+				We'd love to hear from you! Open an issue on GitHub to report
+				bugs, request features, or contribute to the project.
 			</p>
-			<div class="contribute-buttons">
+			<div
+				class="flex gap-6 justify-center flex-wrap max-md:w-full max-md:[&_button]:w-full max-md:[&_a[role='button']]:w-full"
+			>
 				<Button
 					href="https://github.com/aritra1999/httpyum/issues/new?labels=bug&template=bug_report.md"
 					variant="outline"
@@ -36,77 +44,3 @@
 		</div>
 	</div>
 </section>
-
-<style>
-	.container {
-		max-width: 1100px;
-		margin: 0 auto;
-		padding: 0 2rem;
-	}
-
-	.contribute-section {
-		padding: 4rem 2rem;
-		background: #f5f5f5;
-		border-bottom: 1px solid #e5e5e5;
-	}
-
-	.contribute-content {
-		text-align: center;
-		max-width: 700px;
-		margin: 0 auto;
-	}
-
-	.contribute-title {
-		font-size: 1.75rem;
-		font-weight: 700;
-		margin: 0 0 1rem;
-		letter-spacing: -0.01em;
-	}
-
-	.contribute-description {
-		font-size: 1.125rem;
-		color: #666;
-		margin: 0 0 2rem;
-		line-height: 1.6;
-	}
-
-	.contribute-buttons {
-		display: flex;
-		gap: 1.5rem;
-		justify-content: center;
-		flex-wrap: wrap;
-	}
-
-	@media (max-width: 768px) {
-		.container {
-			padding: 0 1rem;
-		}
-
-		.contribute-section {
-			padding: 3rem 1rem;
-		}
-
-		.contribute-buttons {
-			width: 100%;
-		}
-
-		.contribute-buttons :global(button),
-		.contribute-buttons :global(a[role="button"]) {
-			width: 100%;
-		}
-
-		.contribute-title {
-			font-size: 1.5rem;
-		}
-
-		.contribute-description {
-			font-size: 1rem;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.contribute-title {
-			font-size: 1.25rem;
-		}
-	}
-</style>

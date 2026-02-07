@@ -2,15 +2,23 @@
 	import { Github } from "@lucide/svelte";
 </script>
 
-<nav class="navbar">
-	<div class="navbar-container">
-		<a href="/" class="navbar-logo">
+<nav
+	class="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] bg-white/80 backdrop-blur-md rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-300 max-w-[1100px] w-[calc(100%-4rem)] md:top-6 md:w-[calc(100%-4rem)] max-md:top-4 max-md:w-[calc(100%-2rem)]"
+>
+	<div
+		class="px-6 py-3 flex justify-between items-center max-md:px-4 max-md:py-2 gap-6"
+	>
+		<a
+			href="/"
+			class="flex items-center text-black no-underline transition-transform duration-200 hover:scale-105"
+		>
 			<svg
 				width="32"
 				height="32"
 				viewBox="0 0 32 32"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
+				class="block max-md:w-7 max-md:h-7"
 			>
 				<rect
 					x="4"
@@ -33,87 +41,9 @@
 			href="https://github.com/aritra1999/httpyum"
 			target="_blank"
 			rel="noopener noreferrer"
-			class="navbar-github"
+			class="flex items-center justify-center text-black no-underline p-2 rounded-lg transition-all duration-200 hover:bg-black/5 max-md:p-1.5"
 		>
 			<Github size={20} />
 		</a>
 	</div>
 </nav>
-
-<style>
-	.navbar {
-		position: fixed;
-		top: 1.5rem;
-		left: 50%;
-		transform: translateX(-50%);
-		z-index: 1000;
-		background: rgba(255, 255, 255, 0.8);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
-		border-radius: 8px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-		transition: all 0.3s ease;
-		max-width: 1100px;
-		width: calc(100% - 4rem);
-	}
-
-	.navbar-container {
-		padding: 0.75rem 1.5rem;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.navbar-logo {
-		display: flex;
-		align-items: center;
-		color: #000;
-		text-decoration: none;
-		transition: all 0.2s ease;
-	}
-
-	.navbar-logo:hover {
-		transform: scale(1.05);
-	}
-
-	.navbar-logo svg {
-		display: block;
-	}
-
-	.navbar-github {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #000;
-		text-decoration: none;
-		padding: 0.5rem;
-		border-radius: 8px;
-		transition: all 0.2s ease;
-	}
-
-	.navbar-github:hover {
-		background: rgba(0, 0, 0, 0.05);
-	}
-
-	@media (max-width: 768px) {
-		.navbar {
-			top: 1rem;
-			width: calc(100% - 2rem);
-			max-width: none;
-		}
-
-		.navbar-container {
-			padding: 0.5rem 1rem;
-			gap: 1.5rem;
-		}
-
-		.navbar-logo svg {
-			width: 28px;
-			height: 28px;
-		}
-
-		.navbar-github {
-			padding: 0.375rem;
-		}
-	}
-</style>

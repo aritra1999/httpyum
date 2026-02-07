@@ -17,43 +17,82 @@
 	let { shortcuts, copied = false, onCopy }: Props = $props();
 </script>
 
-<section class="docs-section" id="docs">
-	<div class="container">
-		<h2 class="section-title">Documentation</h2>
+<section
+	class="py-16 px-8 bg-white border-b border-[#e5e5e5] max-md:py-12 max-md:px-4"
+	id="docs"
+>
+	<div class="container max-w-[1100px] mx-auto px-8 max-md:px-4">
+		<h2
+			class="text-[2.5rem] font-bold m-0 mb-10 -tracking-[0.02em] lowercase text-black relative inline-block after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-1/2 after:h-1 after:bg-black max-md:text-[1.75rem] max-md:mb-6 max-md:after:w-2/5 max-[480px]:text-2xl"
+		>
+			Documentation
+		</h2>
 
 		<Tabs.Root value="getting-started" class="docs-interactive">
-			<div class="tabs-wrapper">
-				<Tabs.List class="docs-tabs">
-					<Tabs.Trigger value="getting-started" class="doc-tab">
+			<div
+				class="w-full overflow-hidden bg-[#f5f5f5] border border-[#e5e5e5] rounded-lg p-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)] max-md:m-0 max-md:overflow-x-auto max-md:-webkit-overflow-scrolling-touch"
+			>
+				<Tabs.List
+					class="docs-tabs overflow-x-auto overflow-y-hidden -webkit-overflow-scrolling-touch scrollbar-thin flex-nowrap !w-full !max-w-full !bg-transparent !p-0 [&::-webkit-scrollbar]:h-[3px] [&::-webkit-scrollbar-track]:bg-[#f5f5f5] [&::-webkit-scrollbar-thumb]:bg-[#999] [&::-webkit-scrollbar-thumb]:rounded max-md:!justify-start max-md:!w-auto max-md:!min-w-full"
+				>
+					<Tabs.Trigger
+						value="getting-started"
+						class="doc-tab !rounded-lg !border-none !bg-transparent !font-medium !transition-all !duration-200 !text-sm !py-8 !px-7 whitespace-nowrap !flex-shrink-0 !min-w-fit !text-[#666] data-[state=active]:!bg-white data-[state=active]:!text-black data-[state=active]:!font-semibold data-[state=active]:!shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:!bg-white/50 hover:!text-black max-md:!text-[0.8125rem] max-md:!py-3 max-md:!px-4 max-[480px]:!text-xs max-[480px]:!py-2 max-[480px]:!px-2.5"
+					>
 						Getting Started
 					</Tabs.Trigger>
-					<Tabs.Trigger value="file-format" class="doc-tab">
+					<Tabs.Trigger
+						value="file-format"
+						class="doc-tab !rounded-lg !border-none !bg-transparent !font-medium !transition-all !duration-200 !text-sm !py-8 !px-7 whitespace-nowrap !flex-shrink-0 !min-w-fit !text-[#666] data-[state=active]:!bg-white data-[state=active]:!text-black data-[state=active]:!font-semibold data-[state=active]:!shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:!bg-white/50 hover:!text-black max-md:!text-[0.8125rem] max-md:!py-3 max-md:!px-4 max-[480px]:!text-xs max-[480px]:!py-2 max-[480px]:!px-2.5"
+					>
 						File Format
 					</Tabs.Trigger>
-					<Tabs.Trigger value="variables" class="doc-tab">
+					<Tabs.Trigger
+						value="variables"
+						class="doc-tab !rounded-lg !border-none !bg-transparent !font-medium !transition-all !duration-200 !text-sm !py-8 !px-7 whitespace-nowrap !flex-shrink-0 !min-w-fit !text-[#666] data-[state=active]:!bg-white data-[state=active]:!text-black data-[state=active]:!font-semibold data-[state=active]:!shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:!bg-white/50 hover:!text-black max-md:!text-[0.8125rem] max-md:!py-3 max-md:!px-4 max-[480px]:!text-xs max-[480px]:!py-2 max-[480px]:!px-2.5"
+					>
 						Variables
 					</Tabs.Trigger>
-					<Tabs.Trigger value="json-viewer" class="doc-tab">
+					<Tabs.Trigger
+						value="json-viewer"
+						class="doc-tab !rounded-lg !border-none !bg-transparent !font-medium !transition-all !duration-200 !text-sm !py-8 !px-7 whitespace-nowrap !flex-shrink-0 !min-w-fit !text-[#666] data-[state=active]:!bg-white data-[state=active]:!text-black data-[state=active]:!font-semibold data-[state=active]:!shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:!bg-white/50 hover:!text-black max-md:!text-[0.8125rem] max-md:!py-3 max-md:!px-4 max-[480px]:!text-xs max-[480px]:!py-2 max-[480px]:!px-2.5"
+					>
 						JSON Viewer
 					</Tabs.Trigger>
-					<Tabs.Trigger value="shortcuts" class="doc-tab">
+					<Tabs.Trigger
+						value="shortcuts"
+						class="doc-tab !rounded-lg !border-none !bg-transparent !font-medium !transition-all !duration-200 !text-sm !py-8 !px-7 whitespace-nowrap !flex-shrink-0 !min-w-fit !text-[#666] data-[state=active]:!bg-white data-[state=active]:!text-black data-[state=active]:!font-semibold data-[state=active]:!shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:!bg-white/50 hover:!text-black max-md:!text-[0.8125rem] max-md:!py-3 max-md:!px-4 max-[480px]:!text-xs max-[480px]:!py-2 max-[480px]:!px-2.5"
+					>
 						Keyboard Shortcuts
 					</Tabs.Trigger>
 				</Tabs.List>
 			</div>
 
-			<Tabs.Content value="getting-started" class="doc-panel">
-				<h3 class="doc-panel-title">Getting Started</h3>
-				<div class="doc-content">
-					<h4 class="doc-section-title">Installation</h4>
+			<Tabs.Content
+				value="getting-started"
+				class="doc-panel !bg-[#f5f5f5] !border !border-[#e5e5e5] !rounded-lg !p-8 animate-[fadeIn_0.3s_ease-in-out]"
+			>
+				<h3 class="text-2xl font-bold m-0 mb-6 max-md:text-xl">
+					Getting Started
+				</h3>
+				<div
+					class="doc-content [&_p]:m-0 [&_p]:mb-4 [&_p]:text-[#666] [&_p]:text-[0.9375rem]"
+				>
+					<h4
+						class="text-lg font-bold my-8 mt-0 text-black max-md:text-base max-md:my-6 max-md:mt-0"
+					>
+						Installation
+					</h4>
 					<p>Install httpyum using the installation script:</p>
-					<div class="install-card-inline">
+					<div
+						class="bg-white border border-[#e5e5e5] rounded p-6 my-4 relative max-md:p-3"
+					>
 						<pre
-							class="install-code">curl -fsSL https://raw.githubusercontent.com/aritra1999/httpyum/main/scripts/install.sh | bash</pre>
+							class="font-['JetBrains_Mono',monospace] text-sm leading-relaxed text-[#333] m-0 overflow-x-auto whitespace-pre-wrap break-all max-md:text-[0.8125rem]">curl -fsSL https://raw.githubusercontent.com/aritra1999/httpyum/main/scripts/install.sh | bash</pre>
 						<Button
 							variant="ghost"
 							size="sm"
-							class="copy-btn"
+							class="copy-btn !absolute !top-4 !right-4 !bg-white !text-black !border !border-[#e5e5e5] !rounded max-md:!top-3 max-md:!right-3 hover:!bg-[#f5f5f5] hover:!border-[#999]"
 							onclick={onCopy}
 						>
 							{#if copied}
@@ -63,17 +102,33 @@
 							{/if}
 						</Button>
 					</div>
-					<div class="install-platforms-inline">
-						<span class="platform-inline">macOS</span>
-						<span class="platform-inline">Linux</span>
-						<span class="platform-inline">Windows</span>
+					<div class="flex gap-3 my-4 mb-6 max-md:flex-wrap">
+						<span
+							class="py-1.5 px-3 bg-[#f5f5f5] border border-[#e5e5e5] rounded text-[0.8125rem] font-medium text-[#666]"
+							>macOS</span
+						>
+						<span
+							class="py-1.5 px-3 bg-[#f5f5f5] border border-[#e5e5e5] rounded text-[0.8125rem] font-medium text-[#666]"
+							>Linux</span
+						>
+						<span
+							class="py-1.5 px-3 bg-[#f5f5f5] border border-[#e5e5e5] rounded text-[0.8125rem] font-medium text-[#666]"
+							>Windows</span
+						>
 					</div>
 
-					<h4 class="doc-section-title">Usage</h4>
+					<h4
+						class="text-lg font-bold my-8 text-black max-md:text-base max-md:my-6"
+					>
+						Usage
+					</h4>
 					<p>Run httpyum with any .http file:</p>
-					<pre class="doc-code">httpyum example.http</pre>
+					<pre
+						class="font-['JetBrains_Mono',monospace] text-sm leading-relaxed bg-white text-[#333] border border-[#e5e5e5] rounded p-4 my-4 overflow-x-auto block max-md:text-[0.8125rem] max-md:p-3">httpyum example.http</pre>
 					<p>Command-line options:</p>
-					<ul class="doc-list">
+					<ul
+						class="my-4 pl-6 text-[#666] text-[0.9375rem] [&_li]:my-2 [&_code]:font-['JetBrains_Mono',monospace] [&_code]:text-[0.875em] [&_code]:bg-white [&_code]:text-[#333] [&_code]:py-0.5 [&_code]:px-1.5 [&_code]:rounded-sm [&_code]:border [&_code]:border-[#e5e5e5]"
+					>
 						<li>
 							<code>--no-headers</code> - Hide response headers
 						</li>
@@ -87,11 +142,19 @@
 				</div>
 			</Tabs.Content>
 
-			<Tabs.Content value="file-format" class="doc-panel">
-				<h3 class="doc-panel-title">File Format</h3>
-				<div class="doc-content">
+			<Tabs.Content
+				value="file-format"
+				class="doc-panel !bg-[#f5f5f5] !border !border-[#e5e5e5] !rounded-lg !p-8 animate-[fadeIn_0.3s_ease-in-out]"
+			>
+				<h3 class="text-2xl font-bold m-0 mb-6 max-md:text-xl">
+					File Format
+				</h3>
+				<div
+					class="doc-content [&_p]:m-0 [&_p]:mb-4 [&_p]:text-[#666] [&_p]:text-[0.9375rem]"
+				>
 					<p>Standard .http file format with variables:</p>
-					<pre class="doc-code">@variable = value
+					<pre
+						class="font-['JetBrains_Mono',monospace] text-sm leading-relaxed bg-white text-[#333] border border-[#e5e5e5] rounded p-4 my-4 overflow-x-auto block max-md:text-[0.8125rem] max-md:p-3">@variable = value
 
 ### Request Name
 METHOD url
@@ -101,30 +164,48 @@ body</pre>
 				</div>
 			</Tabs.Content>
 
-			<Tabs.Content value="variables" class="doc-panel">
-				<h3 class="doc-panel-title">Variables</h3>
-				<div class="doc-content">
+			<Tabs.Content
+				value="variables"
+				class="doc-panel !bg-[#f5f5f5] !border !border-[#e5e5e5] !rounded-lg !p-8 animate-[fadeIn_0.3s_ease-in-out]"
+			>
+				<h3 class="text-2xl font-bold m-0 mb-6 max-md:text-xl">
+					Variables
+				</h3>
+				<div
+					class="doc-content [&_p]:m-0 [&_p]:mb-4 [&_p]:text-[#666] [&_p]:text-[0.9375rem] [&_code]:font-['JetBrains_Mono',monospace] [&_code]:text-[0.875em] [&_code]:bg-white [&_code]:text-[#333] [&_code]:py-0.5 [&_code]:px-1.5 [&_code]:rounded-sm [&_code]:border [&_code]:border-[#e5e5e5]"
+				>
 					<p>
 						Define variables with <code>@</code> and use with
 						<code>{"{{"}{"}}"}</code>:
 					</p>
-					<pre class="doc-code">@baseUrl = https://api.example.com
+					<pre
+						class="font-['JetBrains_Mono',monospace] text-sm leading-relaxed bg-white text-[#333] border border-[#e5e5e5] rounded p-4 my-4 overflow-x-auto block max-md:text-[0.8125rem] max-md:p-3">@baseUrl = https://api.example.com
 GET {"{{"}baseUrl{"}}"}/users</pre>
 					<p>Load from environment:</p>
 					<pre
-						class="doc-code">@token = {"{{"}$dotenv JWT{"}}"}</pre>
+						class="font-['JetBrains_Mono',monospace] text-sm leading-relaxed bg-white text-[#333] border border-[#e5e5e5] rounded p-4 my-4 overflow-x-auto block max-md:text-[0.8125rem] max-md:p-3">@token = {"{{"}$dotenv JWT{"}}"}</pre>
 				</div>
 			</Tabs.Content>
 
-			<Tabs.Content value="json-viewer" class="doc-panel">
-				<h3 class="doc-panel-title">JSON Viewer</h3>
-				<div class="doc-content">
+			<Tabs.Content
+				value="json-viewer"
+				class="doc-panel !bg-[#f5f5f5] !border !border-[#e5e5e5] !rounded-lg !p-8 animate-[fadeIn_0.3s_ease-in-out]"
+			>
+				<h3 class="text-2xl font-bold m-0 mb-6 max-md:text-xl">
+					JSON Viewer
+				</h3>
+				<div
+					class="doc-content [&_p]:m-0 [&_p]:mb-4 [&_p]:text-[#666] [&_p]:text-[0.9375rem]"
+				>
 					<p>
-						Press <kbd class="doc-key">f</kbd> to open JSON responses
-						in jless for interactive exploration.
+						Press <kbd
+							class="inline-flex items-center justify-center min-w-[28px] py-1.5 px-2 bg-[#f5f5f5] text-[#333] border border-[#e5e5e5] rounded font-['JetBrains_Mono',monospace] text-[0.8125rem] font-semibold not-italic"
+							>f</kbd
+						> to open JSON responses in jless for interactive exploration.
 					</p>
 					<p>Install jless for the best experience:</p>
-					<pre class="doc-code"># macOS
+					<pre
+						class="font-['JetBrains_Mono',monospace] text-sm leading-relaxed bg-white text-[#333] border border-[#e5e5e5] rounded p-4 my-4 overflow-x-auto block max-md:text-[0.8125rem] max-md:p-3"># macOS
 brew install jless
 
 # Linux
@@ -132,17 +213,29 @@ cargo install jless</pre>
 				</div>
 			</Tabs.Content>
 
-			<Tabs.Content value="shortcuts" class="doc-panel">
-				<h3 class="doc-panel-title">Keyboard Shortcuts</h3>
-				<div class="shortcuts-grid-compact">
+			<Tabs.Content
+				value="shortcuts"
+				class="doc-panel !bg-[#f5f5f5] !border !border-[#e5e5e5] !rounded-lg !p-8 animate-[fadeIn_0.3s_ease-in-out]"
+			>
+				<h3 class="text-2xl font-bold m-0 mb-6 max-md:text-xl">
+					Keyboard Shortcuts
+				</h3>
+				<div
+					class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6 max-md:grid-cols-1"
+				>
 					{#each shortcuts as shortcut}
-						<div class="shortcut-item-compact">
-							<div class="shortcut-keys">
+						<div
+							class="flex items-center gap-4 p-4 bg-white border border-[#e5e5e5] rounded-md transition-all duration-200"
+						>
+							<div class="flex gap-2">
 								{#each shortcut.keys as key}
-									<kbd class="key">{key}</kbd>
+									<kbd
+										class="inline-flex items-center justify-center min-w-[28px] py-1 px-2 bg-[#f5f5f5] text-[#333] border border-[#e5e5e5] rounded font-['JetBrains_Mono',monospace] text-[0.8125rem] font-semibold not-italic"
+										>{key}</kbd
+									>
 								{/each}
 							</div>
-							<div class="shortcut-description">
+							<div class="text-[0.9375rem] text-[#666]">
 								{shortcut.description}
 							</div>
 						</div>
@@ -154,125 +247,6 @@ cargo install jless</pre>
 </section>
 
 <style>
-	.container {
-		max-width: 1100px;
-		margin: 0 auto;
-		padding: 0 2rem;
-	}
-
-	.section-title {
-		font-size: 2.5rem;
-		font-weight: 700;
-		margin: 0 0 2.5rem;
-		letter-spacing: -0.02em;
-		text-transform: lowercase;
-		color: #000;
-		position: relative;
-		display: inline-block;
-	}
-
-	.section-title::after {
-		content: "";
-		position: absolute;
-		bottom: -8px;
-		left: 0;
-		width: 50%;
-		height: 4px;
-		background: #000;
-	}
-
-	.tabs-wrapper {
-		width: 100%;
-		overflow: hidden;
-		background: #f5f5f5;
-		border: 1px solid #e5e5e5;
-		border-radius: 8px;
-		padding: 0.25rem;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-	}
-
-	:global(.tabs-list) {
-		overflow-x: auto;
-		overflow-y: hidden;
-		-webkit-overflow-scrolling: touch;
-		scrollbar-width: thin;
-		flex-wrap: nowrap !important;
-		width: 100% !important;
-		max-width: 100% !important;
-		background: transparent !important;
-		padding: 0 !important;
-	}
-
-	:global(.tabs-list::-webkit-scrollbar) {
-		height: 3px;
-	}
-
-	:global(.tabs-list::-webkit-scrollbar-track) {
-		background: #f5f5f5;
-	}
-
-	:global(.tabs-list::-webkit-scrollbar-thumb) {
-		background: #999;
-		border-radius: 3px;
-	}
-
-	:global(.tabs-trigger) {
-		border-radius: 8px !important;
-		border: none !important;
-		background: transparent !important;
-		font-weight: 500 !important;
-		transition: all 0.2s !important;
-		font-size: 0.875rem !important;
-		padding: 2rem 1.75rem !important;
-		white-space: nowrap !important;
-		flex-shrink: 0 !important;
-		min-width: fit-content !important;
-		color: #666 !important;
-	}
-
-	:global(.tabs-trigger[data-state="active"]) {
-		background: #fff !important;
-		color: #000 !important;
-		font-weight: 600 !important;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-	}
-
-	:global(.tabs-trigger:hover:not([data-state="active"])) {
-		background: rgba(255, 255, 255, 0.5) !important;
-		color: #000 !important;
-	}
-
-	.docs-section {
-		padding: 4rem 2rem;
-		background: #fff;
-		border-bottom: 1px solid #e5e5e5;
-	}
-
-	:global(.doc-panel) {
-		background: #f5f5f5 !important;
-		border: 1px solid #e5e5e5 !important;
-		border-radius: 8px !important;
-		padding: 2rem !important;
-		animation: fadeIn 0.3s ease-in-out;
-	}
-
-	.doc-panel-title {
-		font-size: 1.5rem;
-		font-weight: 700;
-		margin: 0 0 1.5rem;
-	}
-
-	.doc-section-title {
-		font-size: 1.125rem;
-		font-weight: 700;
-		margin: 2rem 0 1rem;
-		color: #000;
-	}
-
-	.doc-section-title:first-of-type {
-		margin-top: 0;
-	}
-
 	@keyframes fadeIn {
 		from {
 			opacity: 0;
@@ -281,235 +255,6 @@ cargo install jless</pre>
 		to {
 			opacity: 1;
 			transform: translateY(0);
-		}
-	}
-
-	.doc-content p {
-		margin: 0 0 1rem;
-		color: #666;
-		font-size: 0.9375rem;
-	}
-
-	.doc-code {
-		font-family: "JetBrains Mono", monospace;
-		font-size: 0.875rem;
-		line-height: 1.6;
-		background: #fff;
-		color: #333;
-		border: 1px solid #e5e5e5;
-		border-radius: 4px;
-		padding: 1rem;
-		margin: 1rem 0;
-		overflow-x: auto;
-		display: block;
-	}
-
-	.doc-list {
-		margin: 1rem 0;
-		padding-left: 1.5rem;
-		color: #666;
-		font-size: 0.9375rem;
-	}
-
-	.doc-list li {
-		margin: 0.5rem 0;
-	}
-
-	.doc-list code,
-	.doc-content code {
-		font-family: "JetBrains Mono", monospace;
-		font-size: 0.875em;
-		background: #fff;
-		color: #333;
-		padding: 0.2rem 0.4rem;
-		border-radius: 3px;
-		border: 1px solid #e5e5e5;
-	}
-
-	.doc-key {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 28px;
-		padding: 0.3rem 0.5rem;
-		background: #f5f5f5;
-		color: #333;
-		border: 1px solid #e5e5e5;
-		border-radius: 4px;
-		font-family: "JetBrains Mono", monospace;
-		font-size: 0.8125rem;
-		font-weight: 600;
-		font-style: normal;
-	}
-
-	.install-card-inline {
-		background: #fff;
-		border: 1px solid #e5e5e5;
-		border-radius: 4px;
-		padding: 1.5rem;
-		margin: 1rem 0;
-		position: relative;
-	}
-
-	.install-code {
-		font-family: "JetBrains Mono", monospace;
-		font-size: 0.875rem;
-		line-height: 1.6;
-		color: #333;
-		margin: 0;
-		overflow-x: auto;
-		white-space: pre-wrap;
-		word-break: break-all;
-	}
-
-	:global(.copy-btn) {
-		position: absolute;
-		top: 1rem;
-		right: 1rem;
-		background: #fff !important;
-		color: #000 !important;
-		border: 1px solid #e5e5e5 !important;
-		border-radius: 4px !important;
-	}
-
-	:global(.copy-btn:hover) {
-		background: #f5f5f5 !important;
-		border-color: #999 !important;
-	}
-
-	.install-platforms-inline {
-		display: flex;
-		gap: 0.75rem;
-		margin: 1rem 0 1.5rem;
-	}
-
-	.platform-inline {
-		padding: 0.4rem 0.8rem;
-		background: #f5f5f5;
-		border: 1px solid #e5e5e5;
-		border-radius: 4px;
-		font-size: 0.8125rem;
-		font-weight: 500;
-		color: #666;
-	}
-
-	.shortcuts-grid-compact {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: 1.5rem;
-	}
-
-	.shortcut-item-compact {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 1rem;
-		background: #fff;
-		border: 1px solid #e5e5e5;
-		border-radius: 6px;
-		transition: all 0.2s;
-	}
-
-	.shortcut-keys {
-		display: flex;
-		gap: 0.5rem;
-	}
-
-	.key {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 28px;
-		padding: 0.25rem 0.5rem;
-		background: #f5f5f5;
-		color: #333;
-		border: 1px solid #e5e5e5;
-		border-radius: 4px;
-		font-family: "JetBrains Mono", monospace;
-		font-size: 0.8125rem;
-		font-weight: 600;
-		font-style: normal;
-	}
-
-	.shortcut-description {
-		font-size: 0.9375rem;
-		color: #666;
-	}
-
-	@media (max-width: 768px) {
-		.container {
-			padding: 0 1rem;
-		}
-
-		.section-title {
-			font-size: 1.75rem;
-			margin-bottom: 1.5rem;
-		}
-
-		.section-title::after {
-			width: 40%;
-		}
-
-		.docs-section {
-			padding: 3rem 1rem;
-		}
-
-		.shortcuts-grid-compact {
-			grid-template-columns: 1fr;
-		}
-
-		.install-platforms-inline {
-			flex-wrap: wrap;
-		}
-
-		.doc-panel-title {
-			font-size: 1.25rem;
-		}
-
-		.doc-section-title {
-			font-size: 1rem;
-			margin: 1.5rem 0 0.75rem;
-		}
-
-		.tabs-wrapper {
-			margin: 0;
-			padding: 0.25rem;
-			overflow-x: auto;
-			-webkit-overflow-scrolling: touch;
-		}
-
-		:global(.tabs-list) {
-			justify-content: flex-start !important;
-			padding: 0 !important;
-			width: auto !important;
-			min-width: 100%;
-		}
-
-		:global(.tabs-trigger) {
-			font-size: 0.8125rem !important;
-			padding: 0.75rem 1rem !important;
-		}
-
-		.install-code,
-		.doc-code {
-			font-size: 0.8125rem;
-			padding: 0.75rem;
-		}
-
-		:global(.copy-btn) {
-			top: 0.75rem;
-			right: 0.75rem;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.section-title {
-			font-size: 1.5rem;
-		}
-
-		:global(.tabs-trigger) {
-			font-size: 0.75rem !important;
-			padding: 0.5rem 0.6rem !important;
 		}
 	}
 </style>

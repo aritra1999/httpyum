@@ -9,20 +9,34 @@
 	let { stars = null }: Props = $props();
 </script>
 
-<section class="hero">
-	<div class="container hero-grid">
-		<div class="hero-content">
-			<h1 class="hero-title">httpyum</h1>
-			<p class="hero-subtitle">
+<section
+	class="min-h-screen flex items-center px-8 py-16 relative overflow-hidden bg-white max-md:px-4 max-md:py-12"
+>
+	<div
+		class="absolute -top-1/2 -left-1/2 -right-1/2 -bottom-1/2 bg-[linear-gradient(to_right,#e5e5e5_1px,transparent_1px),linear-gradient(to_bottom,#e5e5e5_1px,transparent_1px)] bg-[length:80px_80px] -skew-y-12 animate-[moveBoxes_20s_linear_infinite] pointer-events-none opacity-40"
+	></div>
+
+	<div
+		class="container max-w-[1100px] mx-auto px-8 grid grid-cols-[30%_70%] gap-16 items-center relative z-[1] max-md:px-4 max-md:grid-cols-1 max-md:gap-8"
+	>
+		<div class="max-w-[600px]">
+			<h1
+				class="text-[clamp(2.5rem,6vw,3.5rem)] font-bold m-0 mb-4 -tracking-[0.02em] leading-[0.95] text-black lowercase max-md:text-[2.5rem] max-[480px]:text-[2rem]"
+			>
+				httpyum
+			</h1>
+			<p
+				class="text-xl text-black bg-white m-0 mb-8 max-w-[600px] font-medium max-md:text-base"
+			>
 				Fast, interactive CLI tool for executing HTTP requests from
 				.http files
 				{#if stars !== null}
-					<span class="hero-stars">
+					<span class="inline text-[#666] text-base">
 						· <a
 							href="https://github.com/aritra1999/httpyum/stargazers"
 							target="_blank"
 							rel="noopener noreferrer"
-							class="stars-link"
+							class="inline-flex items-center gap-1 text-[#666] no-underline transition-colors duration-200 hover:text-black"
 						>
 							<Star size={14} fill="currentColor" />
 							{stars.toLocaleString()}
@@ -30,7 +44,7 @@
 					</span>
 				{/if}
 			</p>
-			<div class="hero-buttons">
+			<div class="flex gap-3 hero-buttons">
 				<Button
 					href="https://github.com/aritra1999/httpyum"
 					variant="default"
@@ -40,35 +54,35 @@
 					<Github size={20} />
 					<span>View on GitHub</span>
 				</Button>
-				<Button
-					href="#docs"
-					variant="outline"
-					size="lg"
-					class="gap-2"
-				>
+				<Button href="#docs" variant="outline" size="lg" class="gap-2">
 					<BookOpen size={20} />
 					<span>Docs</span>
 				</Button>
 			</div>
 		</div>
-		<div class="hero-demo">
-			<div class="demo-wrapper">
+		<div class="relative">
+			<div
+				class="bg-black border-2 border-black overflow-hidden shadow-[4px_4px_0_#000] -rotate-1 transition-transform duration-300 hover:rotate-0 max-md:rotate-0 max-md:shadow-[4px_4px_0_#000]"
+			>
 				<img
 					src="https://github.com/user-attachments/assets/e4313241-a4c8-4c80-a422-1fde7f953bcc"
 					alt="httpyum demo"
-					class="demo-video"
+					class="w-full h-auto block"
 				/>
 			</div>
 		</div>
 	</div>
-	<a href="#features" class="scroll-indicator">
-		<div class="scroll-indicator-line"></div>
-		<div class="scroll-indicator-dot"></div>
+	<a
+		href="#features"
+		class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 no-underline z-10 animate-[bounce_2s_ease-in-out_infinite] max-md:bottom-6"
+	>
+		<div class="w-0.5 h-10 bg-black max-md:h-[30px]"></div>
+		<div class="w-2 h-2 bg-black rounded-full"></div>
 	</a>
 </section>
 
 <style>
-	:global(.hero button, .hero a[role="button"]) {
+	:global(.hero-buttons button, .hero-buttons a[role="button"]) {
 		border-radius: 0 !important;
 		font-weight: 700 !important;
 		text-transform: lowercase !important;
@@ -79,52 +93,19 @@
 		box-shadow: 6px 6px 0 #000 !important;
 	}
 
-	:global(.hero button:hover, .hero a[role="button"]:hover) {
+	:global(.hero-buttons button:hover, .hero-buttons a[role="button"]:hover) {
 		transform: translate(3px, 3px) !important;
 		box-shadow: 3px 3px 0 #000 !important;
 	}
 
-	:global(.hero [data-variant="default"]) {
+	:global(.hero-buttons [data-variant="default"]) {
 		background: #000 !important;
 		color: #fff !important;
 	}
 
-	:global(.hero [data-variant="outline"]) {
+	:global(.hero-buttons [data-variant="outline"]) {
 		background: #fff !important;
 		color: #000 !important;
-	}
-
-	.container {
-		max-width: 1100px;
-		margin: 0 auto;
-		padding: 0 2rem;
-	}
-
-	.hero {
-		min-height: 100vh;
-		display: flex;
-		align-items: center;
-		padding: 4rem 2rem;
-		position: relative;
-		overflow: hidden;
-		background: #fff;
-	}
-
-	.hero::before {
-		content: "";
-		position: absolute;
-		top: -50%;
-		left: -50%;
-		right: -50%;
-		bottom: -50%;
-		background-image:
-			linear-gradient(to right, #e5e5e5 1px, transparent 1px),
-			linear-gradient(to bottom, #e5e5e5 1px, transparent 1px);
-		background-size: 80px 80px;
-		transform: skew(-12deg);
-		animation: moveBoxes 20s linear infinite;
-		pointer-events: none;
-		opacity: 0.4;
 	}
 
 	@keyframes moveBoxes {
@@ -134,112 +115,6 @@
 		100% {
 			transform: skew(-12deg) translateX(80px) translateY(80px);
 		}
-	}
-
-	.hero-grid {
-		display: grid;
-		grid-template-columns: 30% 70%;
-		gap: 4rem;
-		align-items: center;
-		position: relative;
-		z-index: 1;
-	}
-
-	.hero-content {
-		max-width: 600px;
-	}
-
-	.hero-stars {
-		display: inline;
-		color: #666;
-		font-size: 1rem;
-	}
-
-	.stars-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.25rem;
-		color: #666;
-		text-decoration: none;
-		transition: color 0.2s ease;
-	}
-
-	.stars-link:hover {
-		color: #000;
-	}
-
-	.hero-demo {
-		position: relative;
-	}
-
-	.hero-title {
-		font-size: clamp(2.5rem, 6vw, 3.5rem);
-		font-weight: 700;
-		margin: 0 0 1rem;
-		letter-spacing: -0.02em;
-		line-height: 0.95;
-		color: #000;
-		text-transform: lowercase;
-	}
-
-	.hero-subtitle {
-		font-size: 1.25rem;
-		color: #000;
-		background: #fff;
-		margin: 0 0 2rem;
-		max-width: 600px;
-		font-weight: 500;
-	}
-
-	.hero-buttons {
-		display: flex;
-		gap: 0.75rem;
-	}
-
-	.demo-wrapper {
-		background: #000;
-		border: 2px solid #000;
-		overflow: hidden;
-		box-shadow: 4px 4px 0 #000;
-		transform: rotate(-1deg);
-		transition: transform 0.3s ease;
-	}
-
-	.demo-wrapper:hover {
-		transform: rotate(0deg);
-	}
-
-	.demo-video {
-		width: 100%;
-		height: auto;
-		display: block;
-	}
-
-	.scroll-indicator {
-		position: absolute;
-		bottom: 2rem;
-		left: 50%;
-		transform: translateX(-50%);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.5rem;
-		text-decoration: none;
-		z-index: 10;
-		animation: bounce 2s ease-in-out infinite;
-	}
-
-	.scroll-indicator-line {
-		width: 2px;
-		height: 40px;
-		background: #000;
-	}
-
-	.scroll-indicator-dot {
-		width: 8px;
-		height: 8px;
-		background: #000;
-		border-radius: 50%;
 	}
 
 	@keyframes bounce {
@@ -253,54 +128,9 @@
 	}
 
 	@media (max-width: 768px) {
-		.container {
-			padding: 0 1rem;
-		}
-
-		.hero {
-			min-height: 100vh;
-			padding: 3rem 1rem;
-		}
-
-		.hero-grid {
-			grid-template-columns: 1fr;
-			gap: 2rem;
-		}
-
-		.hero-title {
-			font-size: 2.5rem;
-		}
-
-		.hero-subtitle {
-			font-size: 1rem;
-		}
-
-		:global(.hero button, .hero a[role="button"]) {
+		:global(.hero-buttons button, .hero-buttons a[role="button"]) {
 			width: 100%;
 			justify-content: center;
-		}
-
-		.demo-wrapper {
-			transform: rotate(0deg);
-			box-shadow: 4px 4px 0 #000;
-		}
-
-		.scroll-indicator {
-			bottom: 1.5rem;
-		}
-
-		.scroll-indicator-line {
-			height: 30px;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.hero-title {
-			font-size: 2rem;
-		}
-
-		.hero-subtitle {
-			font-size: 1rem;
 		}
 	}
 </style>

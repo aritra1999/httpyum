@@ -115,7 +115,9 @@
 	/>
 </svelte:head>
 
-<div class="page">
+<div
+	class="bg-white text-black font-['Space_Grotesk',sans-serif] leading-normal"
+>
 	<Navbar />
 	<Hero {stars} />
 	<Features {features} />
@@ -123,22 +125,3 @@
 	<Contribute />
 	<Footer />
 </div>
-
-<style>
-	:global(html) {
-		scroll-behavior: smooth;
-	}
-
-	:global(body) {
-		margin: 0;
-		padding: 0;
-		overflow-x: hidden;
-	}
-
-	.page {
-		background: #fff;
-		color: #000;
-		font-family: "Space Grotesk", sans-serif;
-		line-height: 1.5;
-	}
-</style>
