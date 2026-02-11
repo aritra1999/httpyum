@@ -21,21 +21,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: "20"
+          bun-version: latest
 
       - name: Install dependencies
-        run: cd site && rm -rf node_modules package-lock.json && npm install
+        run: cd site && bun install
 
       - name: Prepare SvelteKit
-        run: cd site && npm run prepare
+        run: cd site && bun run prepare
 
       - name: Build
         env:
           BASE_PATH: "/httpyum"
-        run: cd site && npm run build
+        run: cd site && bun run build
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
