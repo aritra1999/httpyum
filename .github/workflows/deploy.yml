@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: cd site && rm -rf node_modules package-lock.json && npm install
 
+      - name: Prepare SvelteKit
+        run: cd site && npm run prepare
+
       - name: Build
         env:
           BASE_PATH: "/httpyum"
