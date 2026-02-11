@@ -29,16 +29,10 @@ jobs:
       - name: Install dependencies
         run: cd site && bun install
 
-      - name: Prepare SvelteKit
-        run: cd site && bun run prepare
-
-      - name: Prepare SvelteKit
-        run: cd site && npm run prepare
-
       - name: Build
         env:
           BASE_PATH: "/httpyum"
-        run: cd site && bun run build
+        run: cd site && bun run prepare && bun run build
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
