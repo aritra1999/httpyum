@@ -309,7 +309,7 @@ func (m *Model) updateViewportContent() {
 
 	m.cachedStaticSection = RenderResponseStaticSection(m.LastResult, m.ShowHeaders, m.Variables, m.ShowVariables, m.Width)
 
-	bodyContent := RenderResponseBodyContent(m.LastResult)
+	bodyContent := RenderResponseBodyContent(m.LastResult, m.Width)
 	m.viewport.SetContent(bodyContent)
 
 	m.updateViewportHeight()

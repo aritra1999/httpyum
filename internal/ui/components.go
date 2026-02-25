@@ -82,14 +82,23 @@ func RenderResponseStaticSection(result *client.ExecutionResult, showHeaders boo
 	return boxStyle.Width(boxWidth).Render(content)
 }
 
-func RenderResponseBodyContent(result *client.ExecutionResult) string {
-	bodySection := renderBodySection(result)
+func RenderResponseBodyContent(result *client.ExecutionResult, width int) string {
+	if result.Request.Body != "" {
+		// Two-column layout when there's a request body
+		bodySection := renderBodySectionTwoColumn(result, width)
+		lines := strings.Split(bodySection, "\n")
+		for j, line := range lines {
+			lines[j] = "  " + line
+		}
+		return strings.Join(lines, "\n")
+	}
 
+	// Single column layout (response body only)
+	bodySection := renderBodySection(result)
 	lines := strings.Split(bodySection, "\n")
 	for j, line := range lines {
 		lines[j] = "  " + line
 	}
-
 	return strings.Join(lines, "\n")
 }
 
@@ -112,7 +121,13 @@ func RenderResponseBoxWithVariables(result *client.ExecutionResult, showHeaders 
 		sections = append(sections, headerSection)
 	}
 
-	bodySection := renderBodySection(result)
+	// Use two-column layout if there's a request body, otherwise single column
+	var bodySection string
+	if result.Request.Body != "" {
+		bodySection = renderBodySectionTwoColumn(result, width)
+	} else {
+		bodySection = renderBodySection(result)
+	}
 	sections = append(sections, bodySection)
 
 	paddedSections := make([]string, len(sections))
@@ -275,6 +290,113 @@ func renderHeadersSection(result *client.ExecutionResult) string {
 	}
 
 	return strings.TrimSuffix(sb.String(), "\n")
+}
+
+func renderBodySectionTwoColumn(result *client.ExecutionResult, totalWidth int) string {
+	contentWidth := totalWidth - 4
+	leftWidth := contentWidth / 2
+	rightWidth := contentWidth - leftWidth - 3
+
+	// Left column: Request Body
+	var leftSb strings.Builder
+	leftSb.WriteString(infoStyle.Bold(true).Render("Request Body"))
+	leftSb.WriteString("\n")
+
+	if result.Request.Body == "" {
+		leftSb.WriteString(mutedStyle.Render("(empty)"))
+	} else {
+		body := result.Request.Body
+
+		// Try to pretty print if it looks like JSON
+		if len(body) > 0 && (body[0] == '{' || body[0] == '[') {
+			prettyJSON, err := client.PrettyPrintJSON([]byte(body))
+			if err == nil {
+				body = prettyJSON
+			}
+		}
+
+		// Wrap lines to fit column width
+		lines := strings.Split(body, "\n")
+		var wrappedLines []string
+		for _, line := range lines {
+			for len(line) > leftWidth {
+				wrappedLines = append(wrappedLines, line[:leftWidth])
+				line = line[leftWidth:]
+			}
+			wrappedLines = append(wrappedLines, line)
+		}
+		leftSb.WriteString(strings.Join(wrappedLines, "\n"))
+	}
+
+	// Right column: Response Body
+	var rightSb strings.Builder
+	rightSb.WriteString(infoStyle.Bold(true).Render("Response Body"))
+
+	if result.Response != nil && client.IsJSON(result.Response.ContentType) {
+		rightSb.WriteString(mutedStyle.Render(" ('f' to explore)"))
+	}
+	rightSb.WriteString("\n")
+
+	if result.Response == nil || len(result.Response.Body) == 0 {
+		rightSb.WriteString(mutedStyle.Render("(empty)"))
+	} else {
+		body := string(result.Response.Body)
+
+		if client.IsJSON(result.Response.ContentType) {
+			prettyJSON, err := client.PrettyPrintJSON(result.Response.Body)
+			if err == nil {
+				body = prettyJSON
+			}
+		}
+
+		// Wrap lines to fit column width
+		lines := strings.Split(body, "\n")
+		var wrappedLines []string
+		for _, line := range lines {
+			for len(line) > rightWidth {
+				wrappedLines = append(wrappedLines, line[:rightWidth])
+				line = line[rightWidth:]
+			}
+			wrappedLines = append(wrappedLines, line)
+		}
+		rightSb.WriteString(strings.Join(wrappedLines, "\n"))
+	}
+
+	// Combine columns side by side
+	leftLines := strings.Split(leftSb.String(), "\n")
+	rightLines := strings.Split(rightSb.String(), "\n")
+
+	maxLines := len(leftLines)
+	if len(rightLines) > maxLines {
+		maxLines = len(rightLines)
+	}
+
+	var output strings.Builder
+	divider := mutedStyle.Render("│")
+
+	for i := 0; i < maxLines; i++ {
+		leftLine := ""
+		if i < len(leftLines) {
+			leftLine = leftLines[i]
+		}
+
+		visualLen := visualLength(leftLine)
+		output.WriteString(leftLine)
+
+		if visualLen < leftWidth {
+			output.WriteString(strings.Repeat(" ", leftWidth-visualLen))
+		}
+
+		output.WriteString(" " + divider + " ")
+
+		if i < len(rightLines) {
+			output.WriteString(rightLines[i])
+		}
+
+		output.WriteString("\n")
+	}
+
+	return strings.TrimSuffix(output.String(), "\n")
 }
 
 func renderBodySection(result *client.ExecutionResult) string {
