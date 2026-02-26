@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"httpyum/internal/client"
@@ -31,6 +32,9 @@ func RenderResponseContent(result *client.ExecutionResult, opts RenderOpts) stri
 	// Column layout (shared by headers and body two-column sections)
 	leftWidth := cw / 2
 	rightWidth := cw - leftWidth - 3
+	if rightWidth < 0 {
+		rightWidth = 0
+	}
 
 	side := borderStyle.Render("│")
 	colDivider := mutedStyle.Render("│")
@@ -289,6 +293,7 @@ func renderHeadersTwoColumn(result *client.ExecutionResult, showResHeaders bool,
 		for key := range result.Response.Headers {
 			keys = append(keys, key)
 		}
+		sort.Strings(keys)
 		for _, key := range keys {
 			rightSb.WriteString("\n")
 			value := strings.Join(result.Response.Headers[key], ", ")
@@ -315,7 +320,13 @@ func buildVariablesText(result *client.ExecutionResult, allVariables map[string]
 		sb.WriteString("\n")
 		sb.WriteString(mutedStyle.Render("(none)"))
 	} else {
-		for key, value := range usedVars {
+		varKeys := make([]string, 0, len(usedVars))
+		for key := range usedVars {
+			varKeys = append(varKeys, key)
+		}
+		sort.Strings(varKeys)
+		for _, key := range varKeys {
+			value := usedVars[key]
 			sb.WriteString("\n")
 			maskedValue := maskValue(value)
 			displayKey := key
