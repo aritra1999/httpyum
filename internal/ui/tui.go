@@ -3,7 +3,6 @@ package ui
 import (
 	"os"
 	"os/exec"
-	"strings"
 	"time"
 
 	"httpyum/internal/client"
@@ -41,21 +40,20 @@ func (i requestItem) Description() string {
 }
 
 type Model struct {
-	ParsedFile          *parser.ParsedFile
-	Requests            []parser.Request
-	Variables           map[string]string
-	list                list.Model
-	viewport            viewport.Model
-	CurrentView         ViewType
-	LastResult          *client.ExecutionResult
-	ShowHeaders         bool
-	ShowVariables       bool
-	ErrorMsg            string
-	Width               int
-	Height              int
-	SpinnerFrame        int
-	executor            *client.Executor
-	cachedStaticSection string
+	ParsedFile    *parser.ParsedFile
+	Requests      []parser.Request
+	Variables     map[string]string
+	list          list.Model
+	viewport      viewport.Model
+	CurrentView   ViewType
+	LastResult    *client.ExecutionResult
+	ShowHeaders   bool
+	ShowVariables bool
+	ErrorMsg      string
+	Width         int
+	Height        int
+	SpinnerFrame  int
+	executor      *client.Executor
 }
 
 func NewModel(parsedFile *parser.ParsedFile, envVars map[string]string, showHeaders bool) Model {
@@ -82,7 +80,6 @@ func NewModel(parsedFile *parser.ParsedFile, envVars map[string]string, showHead
 	}
 
 	vp := viewport.New(80, 20)
-	vp.Style = viewportStyle
 
 	return Model{
 		ParsedFile:    parsedFile,
@@ -142,12 +139,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.list.SetSize(msg.Width-h, msg.Height-v)
 		}
 
-		m.viewport.Width = max(msg.Width-8, 0)
+		m.viewport.Width = m.Width
+		m.viewport.Height = m.viewportHeight()
 		if m.CurrentView == ViewResponse {
-			if m.LastResult != nil {
-				m.cachedStaticSection = RenderResponseStaticSection(m.LastResult, m.ShowHeaders, m.Variables, m.ShowVariables, m.Width)
-			}
-			m.updateViewportHeight()
+			m.rebuildViewportContent()
 		}
 		return m, nil
 
@@ -157,7 +152,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		m.list.ResetFilter()
 
-		m.updateViewportContent()
+		m.viewport.Width = m.Width
+		m.viewport.Height = m.viewportHeight()
+		m.rebuildViewportContent()
+		m.viewport.GotoTop()
 		return m, nil
 
 	case tickMsg:
@@ -196,12 +194,12 @@ func (m Model) handleResponseKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	case "h":
 		m.ShowHeaders = !m.ShowHeaders
-		m.updateViewportContent()
+		m.rebuildViewportContent()
 		return m, nil
 
 	case "v":
 		m.ShowVariables = !m.ShowVariables
-		m.updateViewportContent()
+		m.rebuildViewportContent()
 		return m, nil
 
 	case "b", "esc":
@@ -302,32 +300,33 @@ type jsonViewerErrorMsg struct {
 	err error
 }
 
-func (m *Model) updateViewportContent() {
-	if m.LastResult == nil {
-		return
-	}
-
-	m.cachedStaticSection = RenderResponseStaticSection(m.LastResult, m.ShowHeaders, m.Variables, m.ShowVariables, m.Width)
-
-	bodyContent := RenderResponseBodyContent(m.LastResult, m.Width)
-	m.viewport.SetContent(bodyContent)
-
-	m.updateViewportHeight()
+func (m Model) contentWidth() int {
+	// 1 margin + 1 border + 1 padding on each side = 6
+	return max(m.Width-6, 0)
 }
 
-func (m *Model) updateViewportHeight() {
+func (m Model) boxWidth() int {
+	// 1 margin on each side
+	return max(m.Width-2, 0)
+}
+
+func (m Model) viewportHeight() int {
+	// 1 top border + 1 bottom border + 2 help bar (margin + line)
+	return max(m.Height-4, 3)
+}
+
+func (m *Model) rebuildViewportContent() {
 	if m.LastResult == nil {
 		return
 	}
 
-	staticHeight := strings.Count(m.cachedStaticSection, "\n") + 1
+	content := RenderResponseContent(m.LastResult, RenderOpts{
+		ShowHeaders:    m.ShowHeaders,
+		ShowVariables:  m.ShowVariables,
+		Variables:      m.Variables,
+		ContentWidth:   m.contentWidth(),
+		ViewportHeight: m.viewportHeight(),
+	})
 
-	reservedSpace := staticHeight + 8
-	availableHeight := m.Height - reservedSpace
-
-	if availableHeight < 5 {
-		availableHeight = 5
-	}
-
-	m.viewport.Height = availableHeight
+	m.viewport.SetContent(content)
 }

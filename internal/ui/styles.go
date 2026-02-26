@@ -36,11 +36,6 @@ var (
 				Foreground(colorMuted).
 				Italic(true)
 
-	boxStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(colorPrimary).
-			Padding(0, 0)
-
 	headerKeyStyle = lipgloss.NewStyle().
 			Foreground(colorAccent).
 			Bold(true)
@@ -59,6 +54,10 @@ var (
 	infoStyle = lipgloss.NewStyle().
 			Foreground(colorAccent)
 
+	sectionTitleStyle = lipgloss.NewStyle().
+				Foreground(colorAccent).
+				Bold(true)
+
 	mutedStyle = lipgloss.NewStyle().
 			Foreground(colorMuted)
 
@@ -68,8 +67,6 @@ var (
 
 	docStyle = lipgloss.NewStyle().
 			Margin(1, 2)
-
-	viewportStyle = lipgloss.NewStyle()
 )
 
 func StatusCodeColor(statusCode int) lipgloss.Color {
