@@ -278,7 +278,7 @@ func renderHeadersTwoColumn(result *client.ExecutionResult, showResHeaders bool,
 		value := h.Value
 		maxValueLen := leftWidth - len(h.Key) - 4
 		if maxValueLen > 0 && len(value) > maxValueLen {
-			value = value[:maxValueLen-3] + "..."
+			value = truncate(value, maxValueLen)
 		}
 		leftSb.WriteString(fmt.Sprintf("%s: %s", headerKeyStyle.Render(h.Key), headerValueStyle.Render(value)))
 	}
@@ -298,7 +298,7 @@ func renderHeadersTwoColumn(result *client.ExecutionResult, showResHeaders bool,
 			rightSb.WriteString("\n")
 			value := strings.Join(result.Response.Headers[key], ", ")
 			if rightWidth > 0 && len(value) > rightWidth {
-				value = value[:rightWidth-3] + "..."
+				value = truncate(value, rightWidth)
 			}
 			rightSb.WriteString(fmt.Sprintf("%s: %s", headerKeyStyle.Render(key), headerValueStyle.Render(value)))
 		}
