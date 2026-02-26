@@ -1,12 +1,17 @@
 package parser
 
+type Header struct {
+	Key   string
+	Value string
+}
+
 type Request struct {
 	ID          string
 	LineStart   int
 	LineEnd     int
 	Method      string
 	URL         string
-	Headers     map[string]string
+	Headers     []Header
 	Body        string
 	Description string
 }

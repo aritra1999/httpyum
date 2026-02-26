@@ -19,14 +19,29 @@ func (m Model) RenderResponseView() string {
 		return errorStyle.Render("No response to display")
 	}
 
+	bw := m.boxWidth()
+	margin := " " // 1-space left margin
+
+	// Column junction position for bottom border (0 = no junction)
+	colPos := 0
+	if m.LastResult.Request.Body != "" {
+		cw := m.contentWidth()
+		leftWidth := cw / 2
+		colPos = leftWidth + 2 // padding + left content + space before divider
+	}
+
+	// Add margin to each viewport line
+	vpLines := strings.Split(m.viewport.View(), "\n")
+	for i, line := range vpLines {
+		vpLines[i] = margin + line
+	}
+
 	var sb strings.Builder
-
-	sb.WriteString(m.cachedStaticSection)
-
+	sb.WriteString(margin + RenderTopBorder(bw))
 	sb.WriteString("\n")
-	boxWidth := max(m.Width-4, 1)
-	sb.WriteString(boxStyle.Width(boxWidth).Render(m.viewport.View()))
-
+	sb.WriteString(strings.Join(vpLines, "\n"))
+	sb.WriteString("\n")
+	sb.WriteString(margin + RenderBottomBorder(m.LastResult, bw, colPos))
 	sb.WriteString("\n")
 	sb.WriteString(RenderHelpBar(ViewResponse))
 

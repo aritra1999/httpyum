@@ -45,9 +45,9 @@ func (e *Executor) Execute(req *parser.Request) *ExecutionResult {
 		}
 	}
 
-	for key, value := range req.Headers {
-		substitutedValue := parser.SubstituteVariables(value, e.variables)
-		httpReq.Header.Set(key, substitutedValue)
+	for _, h := range req.Headers {
+		substitutedValue := parser.SubstituteVariables(h.Value, e.variables)
+		httpReq.Header.Add(h.Key, substitutedValue)
 	}
 
 	httpResp, err := e.client.Do(httpReq)

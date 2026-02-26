@@ -103,7 +103,6 @@ func Parse(r io.Reader) (*ParsedFile, error) {
 				LineStart:   lineNum,
 				Method:      httpMatches[1],
 				URL:         strings.TrimSpace(httpMatches[2]),
-				Headers:     make(map[string]string),
 				Description: lastComment,
 			}
 			lastComment = ""
@@ -118,7 +117,6 @@ func Parse(r io.Reader) (*ParsedFile, error) {
 				LineStart:   lineNum,
 				Method:      "GET",
 				URL:         trimmedLine,
-				Headers:     make(map[string]string),
 				Description: lastComment,
 			}
 			lastComment = ""
@@ -131,7 +129,7 @@ func Parse(r io.Reader) (*ParsedFile, error) {
 			if headerMatches := headerRegex.FindStringSubmatch(trimmedLine); headerMatches != nil {
 				headerName := headerMatches[1]
 				headerValue := strings.TrimSpace(headerMatches[2])
-				currentRequest.Headers[headerName] = headerValue
+				currentRequest.Headers = append(currentRequest.Headers, Header{Key: headerName, Value: headerValue})
 				continue
 			}
 		}
@@ -227,8 +225,8 @@ func ExtractUsedVariables(req *Request, allVariables map[string]string) map[stri
 	}
 
 	checkText(req.URL)
-	for _, value := range req.Headers {
-		checkText(value)
+	for _, h := range req.Headers {
+		checkText(h.Value)
 	}
 	checkText(req.Body)
 
