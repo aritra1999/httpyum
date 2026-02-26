@@ -38,7 +38,7 @@ func RenderResponseContent(result *client.ExecutionResult, opts RenderOpts) stri
 	// Separator builders
 	plainSep := borderStyle.Render("├" + strings.Repeat("─", innerWidth) + "┤")
 	colSep := func(junction string) string {
-		leftDashes := leftWidth + 2  // space + left content + space before divider
+		leftDashes := leftWidth + 2   // space + left content + space before divider
 		rightDashes := rightWidth + 2 // space after divider + right content + space
 		return borderStyle.Render("├" + strings.Repeat("─", leftDashes) + junction + strings.Repeat("─", rightDashes) + "┤")
 	}
